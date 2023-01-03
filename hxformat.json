@@ -1,0 +1,24 @@
+{
+  "sameLine": {
+    "functionBody": "keep",
+    "anonFunctionBody": "keep",
+    "ifBody": "keep",
+    "forBody": "keep",
+    "whileBody": "keep",
+    "caseBody": "keep",
+    "expressionIf": "keep"
+  },
+  "whitespace": {
+    "arrowFunctionsPolicy": "around",
+    "parenConfig": {
+      "anonFuncParamParens": {
+        "openingPolicy": "before"
+      }
+    }
+  },
+  "wrapping": {
+    "opAddSubChain": {
+      "defaultWrap": "keep"
+    }
+  }
+}
