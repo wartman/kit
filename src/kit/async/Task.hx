@@ -13,16 +13,35 @@ import kit.core.Lazy;
 	should be usable with minimal fuss.  
 **/
 abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
-	public static function sequence<T>(...tasks:Task<T>):Task<Array<T>> {
+	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
 		return new Future(activate -> {
-			var pending = tasks.toArray();
+			var failed:Bool = false;
+			var result:Array<T> = [];
+			var count:Int = 0;
+			for (index => task in tasks) {
+				// @todo: we need a way to cancel callbacks.
+				task.handle(r -> if (!failed) switch r {
+					case Success(value):
+						result[index] = value;
+						count++;
+						if (count == tasks.length) activate(Success(result));
+					case Failure(exception):
+						failed = true;
+						activate(Failure(exception));
+				});
+			}
+		});
+	}
+
+	public static function sequence<T>(...tasks:Lazy<Task<T>>):Task<Array<T>> {
+		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;
 			function poll(index:Int) {
 				// @todo: we need a way to cancel callbacks.
 				if (failed) return;
-				if (index == pending.length) return activate(Success(result));
-				pending[index].handle(r -> if (!failed) switch r {
+				if (index == tasks.length) return activate(Success(result));
+				tasks[index].get().handle(r -> if (!failed) switch r {
 					case Success(value):
 						result[index] = value;
 						poll(index + 1);
@@ -33,11 +52,6 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 				poll(0);
 			}
 		});
-	}
-
-	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
-		// @todo: Figure out a way to do parallel stuff.
-		throw new haxe.exceptions.NotImplementedException('Still figuring this one out');
 	}
 
 	#if js
@@ -90,13 +104,11 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		this.handle(handler);
 	}
 
-	@:noCompletion
-	public inline function activateWithValue(value:T) {
+	@:noCompletion public inline function activateWithValue(value:T) {
 		this.activate(Success(value));
 	}
 
-	@:noCompletion
-	public inline function activateWithException(e:Exception) {
+	@:noCompletion public inline function activateWithException(e:Exception) {
 		this.activate(Failure(e));
 	}
 }

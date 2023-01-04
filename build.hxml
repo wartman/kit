@@ -6,8 +6,10 @@
 
 -dce full
 
+-lib medic
 -lib hxnodejs
 
 -main Run
 
 -js dist/test.js
+-cmd node dist/test

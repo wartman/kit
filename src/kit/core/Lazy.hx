@@ -7,16 +7,16 @@ import kit.ds.Option;
 **/
 @:forward(get)
 abstract Lazy<T>(LazyObject<T>) {
-	@:from public inline static function ofFunction<T>(get:() -> T) {
-		return new Lazy(new SimpleLazyObject(get));
+	@:from public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
+		return new Lazy(get);
 	}
 
 	@:from public inline static function ofValue<T>(value:T) {
-		return new Lazy({get: () -> value});
+		return new Lazy(() -> value);
 	}
 
-	public inline function new(lazy) {
-		this = lazy;
+	public inline function new(get:() -> T) {
+		this = new SimpleLazyObject(get);
 	}
 }
 

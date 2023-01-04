@@ -5,6 +5,7 @@ typedef Result<T> = kit.ds.Result<T>;
 typedef Lazy<T> = kit.core.Lazy<T>;
 typedef Task<T> = kit.async.Task<T>;
 typedef Future<T> = kit.async.Future<T>;
+typedef Empty = kit.core.Empty;
 #if !macro
 @:genericBuild(kit.event.EventBuilder.build())
 #end

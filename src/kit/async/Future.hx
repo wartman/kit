@@ -1,6 +1,7 @@
 package kit.async;
 
 import haxe.Exception;
+import kit.core.Lazy;
 
 private enum FutureState<T> {
 	Suspended(handlers:Array< (value:T) -> Void>);
@@ -17,30 +18,52 @@ private enum FutureState<T> {
 	allow you to recover from an error. This is intentional -- Futures are
 	designed to be minimal and easy to understand, with more complex behavior
 	built on top of them. Use a `kit.async.Task` if you want error handling.
+
+	Note that Futures are *eager* -- they will start processing immediately.
+	For a lazy future, wrap them in a `tink.core.Lazy`.
 **/
 class Future<T> {
 	public inline static function immediate<T>(value:T) {
 		return new Future(activate -> activate(value));
 	}
 
-	public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
+	/**
+		Process futures in parallel, then return a Future that activates
+		when all child futures are complete.
+	**/
+	public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
 		return new Future(activate -> {
-			var pending = futures.toArray();
+			var result = [];
+			var count = 0;
+			for (index => future in futures) {
+				future.handle(value -> {
+					result[index] = value;
+					count++;
+					if (count == futures.length) activate(result);
+				});
+			}
+		});
+	}
+
+	/**
+		Process futures one after the other. Note that kit Futures are
+		eager -- they will start processing as soon as they are defined.
+		To get around this, you can wrap a future in a `kit.core.Lazy`
+		to ensure it will only be started when the previous Future
+		is completed.
+	**/
+	public static function sequence<T>(...futures:Lazy<Future<T>>):Future<Array<T>> {
+		return new Future(activate -> {
 			var result = [];
 			function poll(index:Int) {
-				if (index == pending.length) return activate(result);
-				pending[index].handle(value -> {
+				if (index == futures.length) return activate(result);
+				futures[index].get().handle(value -> {
 					result[index] = value;
 					poll(index + 1);
 				});
 			}
 			poll(0);
 		});
-	}
-
-	public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
-		// @todo: Figure out a way to do parallel stuff.
-		throw new haxe.exceptions.NotImplementedException('Still figuring this one out');
 	}
 
 	var state:FutureState<T> = Suspended([]);

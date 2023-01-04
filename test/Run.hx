@@ -1,25 +1,10 @@
-using kit.Api;
-
 function main():Void {
-	var foo:Task<String> = 'foo';
-	foo.next(foo -> foo + 'bar').handle(o -> {
-		o.extract(Success(var foobar = 'default'));
-		trace(foobar);
-	});
-	var test = new Foo('one', 1);
-	test.extract({one: var one = 'nope', two:1});
-	trace(one);
-	test.extract({one: var other, two:var two});
-	trace(other);
-	trace(two);
-}
+	var runner = new medic.Runner();
 
-class Foo {
-	public final one:String;
-	public final two:Int;
+	runner.add(new unit.async.TestFuture());
 
-	public function new(one:String, two:Int) {
-		this.one = one;
-		this.two = two;
-	}
+	runner.add(new unit.core.TestSugar());
+	runner.add(new unit.core.TestLazy());
+
+	runner.run();
 }
