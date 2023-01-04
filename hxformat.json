@@ -9,12 +9,7 @@
     "expressionIf": "keep"
   },
   "whitespace": {
-    "arrowFunctionsPolicy": "around",
-    "parenConfig": {
-      "anonFuncParamParens": {
-        "openingPolicy": "before"
-      }
-    }
+    "arrowFunctionsPolicy": "around"
   },
   "wrapping": {
     "opAddSubChain": {

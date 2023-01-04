@@ -4,8 +4,7 @@ import haxe.Exception;
 import kit.core.Lazy;
 
 /**
-	Represents a value that has either succeeded or failed
-	(represented by a haxe.Exception).
+	Represents a value that can either succeed or fail.
 **/
 @:using(kit.ds.Result.ResultTools)
 enum Result<T> {

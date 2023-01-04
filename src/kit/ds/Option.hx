@@ -5,7 +5,7 @@ package kit.ds;
 	value (None). 
 
 	Note: this is a copy of Haxe's builtin Option enum, done so that 
-	  we could add the @:using to it.
+	we could add the @:using to it.
 **/
 @:using(kit.ds.Option.OptionTools)
 enum Option<T> {

@@ -1,6 +1,7 @@
 package kit.event;
 
 import haxe.Constraints.Function;
+import kit.core.Cancellable;
 
 /**
 	A generic event (really a "signal", but that term conflicts with some other
@@ -12,21 +13,20 @@ import haxe.Constraints.Function;
 @:genericBuild(kit.event.EventBuilder.build())
 class Event<Rest> {}
 
-abstract class EventBase<T:Function> {
-	public var isCanceled(default, null):Bool = false;
-
+abstract class EventBase<T:Function> implements CancellableObject {
 	var head:EventSubscription<T>;
 	var tail:EventSubscription<T>;
 	var toAddHead:EventSubscription<T>;
 	var toAddTail:EventSubscription<T>;
 	var dispatching:Bool;
+	var canceled:Bool = false;
 
 	public function new() {
 		dispatching = false;
 	}
 
 	public function add(listener:T, once:Bool = false):EventSubscription<T> {
-		if (isCanceled) {
+		if (canceled) {
 			throw 'Cannot add a listener to a canceled signal';
 		}
 
@@ -57,8 +57,12 @@ abstract class EventBase<T:Function> {
 		return add(listener, true);
 	}
 
+	public function isCanceled() {
+		return canceled;
+	}
+
 	public function cancel() {
-		isCanceled = true;
+		canceled = true;
 
 		var sub = head;
 
@@ -110,7 +114,7 @@ abstract class EventBase<T:Function> {
 }
 
 @:allow(kit.event.EventBase)
-class EventSubscription<T:Function> {
+class EventSubscription<T:Function> implements CancellableObject {
 	final listener:T;
 	final once:Bool;
 
@@ -122,6 +126,10 @@ class EventSubscription<T:Function> {
 		this.signal = signal;
 		this.listener = listener;
 		this.once = once;
+	}
+
+	public function isCanceled() {
+		return signal == null;
 	}
 
 	public function cancel():Void {

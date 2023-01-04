@@ -35,9 +35,16 @@ class Event<Rest> {}
 	trace(foo); // => "default"
 	```
 
-	Unless you're sure a pattern will always match, best practice will
-	probably be to always provide defaults.
+	Unless you're sure a pattern will always match, the best practice will
+	probably be to provide defaults.
 **/
 macro function extract(input, match) {
 	return kit.core.sugar.Extract.createExtractExpr(input, match);
+}
+
+/**
+	Casts the given expression to the given type.
+**/
+macro function as(input, type) {
+	return kit.core.sugar.Type.as(input, type);
 }

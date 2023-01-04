@@ -4,14 +4,6 @@ import haxe.Exception;
 import kit.ds.Result;
 import kit.core.Lazy;
 
-/**
-	Represents a value that may fail or succeed in the future.
-
-	Kit's Tasks are more directly comparable to js promises, and 
-	are designed to work well with them. If you're targeting js,
-	you can easily cast promises to Tasks, meaning most async js apis
-	should be usable with minimal fuss.  
-**/
 abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
 		return new Future(activate -> {
@@ -24,7 +16,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 					case Success(value):
 						result[index] = value;
 						count++;
-						if (count == tasks.length) activate(Success(result));
+						if (count >= tasks.length) activate(Success(result));
 					case Failure(exception):
 						failed = true;
 						activate(Failure(exception));
@@ -33,7 +25,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		});
 	}
 
-	public static function sequence<T>(...tasks:Lazy<Task<T>>):Task<Array<T>> {
+	public static function sequence<T>(...tasks:Task<T>):Task<Array<T>> {
 		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;
@@ -41,7 +33,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 				// @todo: we need a way to cancel callbacks.
 				if (failed) return;
 				if (index == tasks.length) return activate(Success(result));
-				tasks[index].get().handle(r -> if (!failed) switch r {
+				tasks[index].handle(r -> if (!failed) switch r {
 					case Success(value):
 						result[index] = value;
 						poll(index + 1);
@@ -102,13 +94,5 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 
 	public inline function handle(handler:(result:Result<T>) -> Void):Void {
 		this.handle(handler);
-	}
-
-	@:noCompletion public inline function activateWithValue(value:T) {
-		this.activate(Success(value));
-	}
-
-	@:noCompletion public inline function activateWithException(e:Exception) {
-		this.activate(Failure(e));
 	}
 }

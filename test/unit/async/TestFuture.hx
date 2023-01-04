@@ -1,7 +1,7 @@
 package unit.async;
 
+import haxe.Timer;
 import kit.async.Future;
-import kit.core.Lazy;
 
 using Medic;
 using kit.core.Sugar;
@@ -23,14 +23,14 @@ class TestFuture implements TestCase {
 	@:test.async
 	function testSequence(done) {
 		var called = 0;
-		Future.sequence(new Lazy(() -> {
+		Future.sequence(new Future(activate -> {
 			called.equals(0);
 			called++;
-			new Future(activate -> activate('foo'));
-		}), new Lazy(() -> {
+			activate('foo');
+		}), new Future(activate -> {
 			called.equals(1);
 			called++;
-			new Future(activate -> activate('bar'));
+			activate('bar');
 		})).handle(values -> {
 			values.extract([var foo, var bar]);
 			called.equals(2);
@@ -50,5 +50,38 @@ class TestFuture implements TestCase {
 			bar.equals('bar');
 			done();
 		});
+	}
+
+	@:test('Futures can be mapped')
+	@:test.async
+	function testMapping(done) {
+		var foo = new Future(activate -> activate('foo'));
+		foo.map(foo -> foo + 'bar').map(bar -> bar + 'bin').handle(value -> {
+			value.equals('foobarbin');
+			done();
+		});
+	}
+
+	@:test('Futures can be flatMapped')
+	@:test.async
+	function testFlatMapping(done) {
+		var foo = new Future(activate -> activate('foo'));
+		foo.flatMap(foo -> new Future(activate -> activate(foo + 'bar'))).flatMap(bar -> new Future(activate -> activate(bar + 'bin'))).handle(value -> {
+			value.equals('foobarbin');
+			done();
+		});
+	}
+
+	@:test('Futures are lazy and will not be invoked until handle is called')
+	@:test.async
+	function testLaziness(done) {
+		new Future(activate -> {
+			Assert.fail('Activation function was called.');
+			activate('foo');
+		});
+		Timer.delay(() -> {
+			Assert.pass();
+			done();
+		}, 10);
 	}
 }
