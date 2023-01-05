@@ -15,7 +15,7 @@ class TestHaxeAdaptor implements TestCase {
 		var adaptor = new HaxeAdaptor();
 		adaptor.fetch(new Request(Get, 'https://httpbin.org/get?foo=foo', new Headers([{name: Accept, value: 'application/json'}]))).handle(res -> switch res {
 			case Success(res):
-				// @todo: Check request headers.
+				// @todo: Check response headers.
 				res.status.equals(OK);
 				// @todo: We need a better way to handle request bodies.
 				var json:{foo:String} = res.body.toString().parse().args;
