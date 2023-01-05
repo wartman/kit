@@ -2,7 +2,7 @@ package kit.async;
 
 import haxe.Exception;
 
-typedef FutureActivator<T> = ((value:T) -> Void) -> Void;
+typedef FutureActivator<T> = (activate:(value:T) -> Void) -> Void;
 typedef FutureHandler<T> = (value:T) -> Void;
 
 private enum FutureState<T> {

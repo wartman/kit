@@ -1,3 +1,5 @@
+import unit.http.adaptor.TestHaxeAdaptor;
+
 function main():Void {
 	var runner = new medic.Runner();
 
@@ -8,6 +10,9 @@ function main():Void {
 	runner.add(new unit.core.TestLazy());
 
 	runner.add(new unit.event.TestEvent());
+
+	runner.add(new unit.http.TestUrl());
+	runner.add(new unit.http.adaptor.TestHaxeAdaptor());
 
 	runner.run();
 }
