@@ -1,13 +1,22 @@
+import kit.test.*;
+import kit.test.reporter.*;
+
 function main():Void {
-	var runner = new medic.Runner();
+	var reporter = new ConsoleReporter({
+		title: 'Kit Tests',
+		verbose: true,
+		trackProgress: true
+	});
+	var runner = new kit.test.Runner();
+	var cancel = runner.addReporter(reporter);
 
-	runner.add(new unit.async.TestFuture());
-	runner.add(new unit.async.TestTask());
+	runner.add(spec.async.FutureSuite);
+	runner.add(spec.async.TaskSuite);
 
-	runner.add(new unit.core.TestSugar());
-	runner.add(new unit.core.TestLazy());
+	runner.add(spec.core.SugarSuite);
+	runner.add(spec.core.LazySuite);
 
-	runner.add(new unit.event.TestEvent());
+	runner.add(spec.event.EventSuite);
 
 	runner.run();
 }

@@ -29,6 +29,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;
+
 			function poll(index:Int) {
 				// @todo: we need a way to cancel callbacks.
 				if (failed) return;
@@ -41,8 +42,9 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 						failed = true;
 						activate(Failure(e));
 				});
-				poll(0);
 			}
+
+			poll(0);
 		});
 	}
 
@@ -69,7 +71,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		return new Task(future.map(value -> Success(value)));
 	}
 
-	@:from public static function ofException(e:Exception) {
+	@:from public static function ofException<T>(e:Exception):Task<T> {
 		return new Task(new Future(activate -> activate(Failure(e))));
 	}
 
@@ -85,6 +87,13 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		return this.flatMap(result -> switch result {
 			case Success(value): handler(value);
 			case Failure(exception): Task.ofException(exception);
+		});
+	}
+
+	public inline function recover(handler:(exception:Exception) -> Task<T>):Task<T> {
+		return this.flatMap(result -> switch result {
+			case Success(value): Task.ofResult(Success(value));
+			case Failure(exception): handler(exception);
 		});
 	}
 

@@ -6,7 +6,6 @@
 
 -dce full
 
--lib medic
 -lib hxnodejs
 
 -main Run
