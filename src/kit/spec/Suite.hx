@@ -1,7 +1,7 @@
-package kit.test;
+package kit.spec;
 
-import kit.test.Result;
-import kit.test.Spec;
+import kit.spec.Result;
+import kit.spec.Spec;
 import kit.async.Task;
 import kit.ds.Option;
 
@@ -17,10 +17,10 @@ abstract class Suite {
 		this.events = events;
 	}
 
-	abstract function test():Void;
+	abstract function execute():Void;
 
 	public function run() {
-		test();
+		execute();
 		return Task.sequence(...suites.map(s -> s.run())).next(results -> new SuiteResult(this.getClass().getClassName(), [], results));
 	}
 

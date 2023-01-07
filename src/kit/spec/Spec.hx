@@ -1,12 +1,12 @@
-package kit.test;
+package kit.spec;
 
 import haxe.PosInfos;
 import kit.async.Future;
 import kit.async.Task;
 import kit.ds.Empty;
-import kit.test.Result;
+import kit.spec.Result;
 
-@:allow(kit.test)
+@:allow(kit.spec)
 final class Spec {
 	final description:String;
 	final body:Null<SpecBody>;

@@ -1,6 +1,6 @@
-package kit.test.reporter;
+package kit.spec.reporter;
 
-import kit.test.Result.SuiteResult;
+import kit.spec.Result.SuiteResult;
 
 using StringTools;
 using kit.core.Sugar;
@@ -39,7 +39,7 @@ class ConsoleReporter implements Reporter {
 	public function report(result:Result) {
 		var buf = new StringBuf();
 		var total = 0;
-		var successes = 0;
+		var passing = 0;
 		var failures = 0;
 
 		buf.add('\n');
@@ -47,7 +47,7 @@ class ConsoleReporter implements Reporter {
 		function reportSuite(suite:SuiteResult, indent:Int) {
 			suite.status().extract({passed: var passed, failed:var failed});
 
-			successes += passed;
+			passing += passed;
 			failures += failed;
 			total += passed + failed;
 
@@ -91,7 +91,7 @@ class ConsoleReporter implements Reporter {
 		buf.add('\n');
 		buf.add('Status: ${failures == 0 ? 'OK' : 'FAILED'}');
 		buf.add('\n');
-		buf.add('${total} tests | ${successes} success | ${failures} failed');
+		buf.add('${total} specifications | ${passing} passed | ${failures} failed');
 		buf.add('\n');
 
 		print(buf.toString());

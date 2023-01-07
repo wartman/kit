@@ -3,7 +3,7 @@ package spec.async;
 import haxe.Exception;
 
 class TaskSuite extends Suite {
-	function test() {
+	function execute() {
 		describe('Given a static vlaue', () -> {
 			it('will be converted into a task', (spec:Spec) -> {
 				spec.expect(1);

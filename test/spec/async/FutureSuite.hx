@@ -3,7 +3,7 @@ package spec.async;
 import haxe.Timer;
 
 class FutureSuite extends Suite {
-	function test() {
+	function execute() {
 		describe('Given a value', () -> {
 			it('will be handled immediately', () -> {
 				var future = new Future(activate -> activate('pass'));

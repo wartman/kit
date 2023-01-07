@@ -1,7 +1,7 @@
 package spec.core;
 
 class SugarSuite extends Suite {
-	function test() {
+	function execute() {
 		describe('Given an object', () -> {
 			it('can deconstruct it', () -> {
 				var foo:{a:String, b:Int} = {a: 'a', b: 1};

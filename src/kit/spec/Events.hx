@@ -1,8 +1,8 @@
-package kit.test;
+package kit.spec;
 
 import haxe.Exception;
 import kit.core.Cancellable;
-import kit.test.Result;
+import kit.spec.Result;
 import kit.event.Event;
 
 final class Events {

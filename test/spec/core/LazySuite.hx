@@ -1,7 +1,7 @@
 package spec.core;
 
 class LazySuite extends Suite {
-	function test() {
+	function execute() {
 		describe('kit.core.Lazy', () -> {
 			describe('Given a function', () -> {
 				it('will resolve on a call to `get`', () -> {

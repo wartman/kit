@@ -1,4 +1,4 @@
-package kit.test;
+package kit.spec;
 
 final class Result {
 	public final suites:Array<SuiteResult>;

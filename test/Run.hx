@@ -1,5 +1,5 @@
-import kit.test.*;
-import kit.test.reporter.*;
+import kit.spec.*;
+import kit.spec.reporter.*;
 
 function main():Void {
 	var reporter = new ConsoleReporter({
@@ -7,7 +7,7 @@ function main():Void {
 		verbose: true,
 		trackProgress: true
 	});
-	var runner = new kit.test.Runner();
+	var runner = new Runner();
 	var cancel = runner.addReporter(reporter);
 
 	runner.add(spec.async.FutureSuite);
