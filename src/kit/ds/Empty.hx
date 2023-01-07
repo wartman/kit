@@ -1,4 +1,4 @@
-package kit.core;
+package kit.ds;
 
 /**
 	Indicates the lack of a value (like a unit-type).
