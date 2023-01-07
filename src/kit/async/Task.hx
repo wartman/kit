@@ -66,7 +66,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 	}
 
 	@:from public static function ofFuture<T>(future:Future<T>) {
-		return new Task(new Future(activate -> future.handle(value -> activate(Success(value)))));
+		return new Task(future.map(value -> Success(value)));
 	}
 
 	@:from public static function ofException(e:Exception) {
@@ -84,7 +84,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 	public inline function next<R>(handler:(value:T) -> Task<R>):Task<R> {
 		return this.flatMap(result -> switch result {
 			case Success(value): handler(value);
-			case Failure(exception): (exception : Task<R>);
+			case Failure(exception): Task.ofException(exception);
 		});
 	}
 
