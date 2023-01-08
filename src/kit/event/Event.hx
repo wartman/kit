@@ -13,7 +13,7 @@ import kit.core.Cancellable;
 @:genericBuild(kit.event.EventBuilder.build())
 class Event<Rest> {}
 
-abstract class EventBase<T:Function> implements CancellableObject {
+abstract class EventBase<T:Function> implements CancellableLink {
 	var head:EventSubscription<T>;
 	var tail:EventSubscription<T>;
 	var toAddHead:EventSubscription<T>;
@@ -114,7 +114,7 @@ abstract class EventBase<T:Function> implements CancellableObject {
 }
 
 @:allow(kit.event.EventBase)
-class EventSubscription<T:Function> implements CancellableObject {
+class EventSubscription<T:Function> implements CancellableLink {
 	final listener:T;
 	final once:Bool;
 

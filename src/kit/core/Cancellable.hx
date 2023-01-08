@@ -1,6 +1,6 @@
 package kit.core;
 
-interface CancellableObject {
+interface CancellableLink {
 	public function isCanceled():Bool;
 	public function cancel():Void;
 }
@@ -8,13 +8,36 @@ interface CancellableObject {
 // @todo: Decide if this and Disposable should be merged.
 
 @:forward
-abstract Cancellable(CancellableObject) from CancellableObject {
+abstract Cancellable(CancellableLink) from CancellableLink {
 	@:from public static function ofArray(items:Array<Cancellable>):Cancellable {
 		return new CancellableList(items);
 	}
+
+	@:from public static function ofFunction(link:() -> Void):Cancellable {
+		return new SimpleCancelableLink(link);
+	}
 }
 
-class CancellableList implements CancellableObject {
+class SimpleCancelableLink implements CancellableLink {
+	var callback:() -> Void;
+
+	public function new(callback) {
+		this.callback = callback;
+	}
+
+	public function isCanceled():Bool {
+		return callback != null;
+	}
+
+	public function cancel() {
+		if (callback != null) {
+			callback();
+			callback = null;
+		}
+	}
+}
+
+class CancellableList implements CancellableLink {
 	var items:Null<Array<Cancellable>>;
 
 	public function new(items:Array<Cancellable>) {

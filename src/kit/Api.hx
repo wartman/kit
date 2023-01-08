@@ -4,6 +4,8 @@ typedef Option<T> = kit.ds.Option<T>;
 typedef Result<T> = kit.ds.Result<T>;
 typedef Empty = kit.ds.Empty;
 typedef Lazy<T> = kit.core.Lazy<T>;
+typedef Cancellable = kit.core.Cancellable;
+typedef CancellableLink = kit.core.Cancellable.CancellableLink;
 typedef Task<T> = kit.async.Task<T>;
 typedef Future<T> = kit.async.Future<T>;
 #if !macro

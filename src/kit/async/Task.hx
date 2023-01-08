@@ -3,6 +3,7 @@ package kit.async;
 import haxe.Exception;
 import kit.ds.Result;
 import kit.core.Lazy;
+import kit.core.Cancellable;
 
 abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
@@ -10,17 +11,22 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 			var failed:Bool = false;
 			var result:Array<T> = [];
 			var count:Int = 0;
+			var links:Array<Cancellable> = [];
+
 			for (index => task in tasks) {
-				// @todo: we need a way to cancel callbacks.
-				task.handle(r -> if (!failed) switch r {
+				if (failed) break;
+				var link = task.handle(r -> if (!failed) switch r {
 					case Success(value):
 						result[index] = value;
 						count++;
 						if (count >= tasks.length) activate(Success(result));
 					case Failure(exception):
 						failed = true;
+						for (link in links) if (!link.isCanceled()) link.cancel();
+						links = [];
 						activate(Failure(exception));
 				});
+				links.push(link);
 			}
 		});
 	}
@@ -31,7 +37,6 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 			var failed:Bool = false;
 
 			function poll(index:Int) {
-				// @todo: we need a way to cancel callbacks.
 				if (failed) return;
 				if (index == tasks.length) return activate(Success(result));
 				tasks[index].handle(r -> if (!failed) switch r {
@@ -101,7 +106,7 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		return this.map(result -> result.or(value));
 	}
 
-	public inline function handle(handler:(result:Result<T>) -> Void):Void {
-		this.handle(handler);
+	public inline function handle(handler:(result:Result<T>) -> Void):Cancellable {
+		return this.handle(handler);
 	}
 }

@@ -1,5 +1,6 @@
 package kit.async;
 
+import kit.core.Cancellable;
 import haxe.Exception;
 
 typedef FutureActivator<T> = (activate:(value:T) -> Void) -> Void;
@@ -58,7 +59,7 @@ class Future<T> {
 		return new Future(activate -> handle(value -> transform(value).handle(activate)));
 	}
 
-	public function handle(handler:FutureHandler<T>):Void {
+	public function handle(handler:FutureHandler<T>):Cancellable {
 		switch state {
 			case Inactive(activator, handlers):
 				state = Suspended(handlers.concat([handler]));
@@ -67,6 +68,14 @@ class Future<T> {
 				handlers.push(handler);
 			case Active(value):
 				handler(value);
+		}
+
+		return () -> {
+			switch state {
+				case Inactive(_, handlers) | Suspended(handlers):
+					handlers.remove(handler);
+				default:
+			}
 		}
 	}
 

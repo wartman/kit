@@ -52,10 +52,8 @@ function createIfExtractExpr(input:Expr, match:Expr, body:Expr, ?otherwise:Expr)
 				@:mergeBlock $b{extracted.decls};
 				$b{extracted.assignments};
 				${body};
-				true;
 			default:
 				${otherwise};
-				false;
 		}
 	}
 }

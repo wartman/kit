@@ -66,5 +66,27 @@ class FutureSuite extends Suite {
 				});
 			});
 		});
+
+		describe('If `handle` is called', () -> {
+			it('should return a cancellable link', () -> {
+				var future = new Future(activate -> activate('string'));
+				var link = future.handle(value -> Empty);
+				(link is CancellableLink).should().be(true);
+			});
+			it('should not call the callback if the cancellable is canceled', (spec:Spec) -> {
+				spec.expect(0);
+				// spec.wait(20);
+				return new Future(outerActivate -> {
+					var future = new Future<String>(activate -> {
+						Timer.delay(() -> {
+							activate('foo');
+							outerActivate(Empty);
+						}, 20);
+					});
+					var link = future.handle(value -> value.should().be('foo'));
+					link.cancel();
+				});
+			});
+		});
 	}
 }
