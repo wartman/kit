@@ -18,5 +18,7 @@ function main():Void {
 
 	runner.add(spec.event.EventSuite);
 
+	runner.add(spec.ds.ResultSuite);
+
 	runner.run();
 }

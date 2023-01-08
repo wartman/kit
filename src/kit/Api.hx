@@ -43,6 +43,26 @@ macro function extract(input, match) {
 }
 
 /**
+	Deconstructs an expression and passes it to the give `body`, but *only*
+	if the expression is matched.
+
+	If the expression is not matched, you can optionally provide an `otherwise`
+	expression that will be executed instead.
+
+	```haxe
+	var foo:Option<String> = None;
+	foo.ifExtract(Some(var value), {
+		trace(value); // does not run
+	}, {
+		trace('Runs');
+	});
+	```
+**/
+macro function ifExtract(input, match, body, ?otherwise) {
+	return kit.core.sugar.Extract.createIfExtractExpr(input, match, body, otherwise);
+}
+
+/**
 	Casts the given expression to the given type.
 **/
 macro function as(input, type) {

@@ -2,9 +2,9 @@
 -cp test
 
 -D js-es=6
--D analyzer-optimize
+# -D analyzer-optimize
 
--dce full
+# -dce full
 
 -lib hxnodejs
 
