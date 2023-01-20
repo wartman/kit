@@ -68,5 +68,14 @@ macro function ifExtract(input, match, body, ?otherwise) {
 	Casts the given expression to the given type.
 **/
 macro function as(input, type) {
-	return kit.core.sugar.Type.as(input, type);
+	return kit.core.sugar.Type.createCast(input, type);
+}
+
+/**
+	Allows you to pipe a value through a chain of functions.
+
+	@todo: A better description.
+**/
+macro function pipe(...exprs) {
+	return kit.core.sugar.Pipe.createPipe(exprs.toArray());
 }

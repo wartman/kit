@@ -49,5 +49,22 @@ class SugarSuite extends Suite {
 				});
 			});
 		});
+		describe('*.pipe', () -> {
+			function add(input:String, append:String) {
+				return input + append;
+			}
+			describe('Given a list of function calls...', () -> {
+				it('will pipe them', () -> {
+					var result = 'foo'.pipe(add(_, 'bar'), add('bin', _), add(_, 'bax'));
+					result.should().be('binfoobarbax');
+				});
+			});
+			describe('Given a lambda or function with one argument...', () -> {
+				it('Will call it', () -> {
+					var result = 'foo'.pipe(add(_, 'bar'), str -> str + 'ok', add('ok', _));
+					result.should().be('okfoobarok');
+				});
+			});
+		});
 	}
 }

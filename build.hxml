@@ -4,7 +4,8 @@
 -D js-es=6
 # -D analyzer-optimize
 
-# -dce full
+-dce full
+-D analyzer-optimize
 
 -lib hxnodejs
 

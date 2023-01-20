@@ -9,5 +9,9 @@ macro function ifExtract(input, match, body, ?otherwise) {
 }
 
 macro function as(input, type) {
-	return kit.core.sugar.Type.as(input, type);
+	return kit.core.sugar.Type.createCast(input, type);
+}
+
+macro function pipe(...exprs) {
+	return kit.core.sugar.Pipe.createPipe(exprs.toArray());
 }
