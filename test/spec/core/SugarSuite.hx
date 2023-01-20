@@ -43,9 +43,9 @@ class SugarSuite extends Suite {
 				it('does not leak into the parent scope', (spec:Spec) -> {
 					spec.expect(2);
 					var foo:Option<String> = Some('foo');
-					var bar:String = 'bar';
+					var value:String = 'bar';
 					foo.ifExtract(Some(var value), value.should().be('foo'));
-					bar.should().be('bar');
+					value.should().be('bar');
 				});
 			});
 		});
