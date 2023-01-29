@@ -1,17 +1,17 @@
 package kit;
 
-typedef Option<T> = kit.ds.Option<T>;
-typedef Result<T> = kit.ds.Result<T>;
-typedef Empty = kit.ds.Empty;
-typedef Lazy<T> = kit.core.Lazy<T>;
-typedef Cancellable = kit.core.Cancellable;
-typedef CancellableLink = kit.core.Cancellable.CancellableLink;
-typedef Task<T> = kit.async.Task<T>;
-typedef Future<T> = kit.async.Future<T>;
+@:noUsing typedef Maybe<T> = kit.ds.Maybe<T>;
+@:noUsing typedef Result<T> = kit.ds.Result<T>;
+@:noUsing typedef Empty = kit.ds.Empty;
+@:noUsing typedef Lazy<T> = kit.core.Lazy<T>;
+@:noUsing typedef Cancellable = kit.core.Cancellable;
+@:noUsing typedef CancellableLink = kit.core.Cancellable.CancellableLink;
+@:noUsing typedef Task<T> = kit.async.Task<T>;
+@:noUsing typedef Future<T> = kit.async.Future<T>;
 #if !macro
 @:genericBuild(kit.event.EventBuilder.build())
 #end
-class Event<Rest> {}
+@:noUsing class Event<Rest> {}
 
 /**
 	Deconstructs an expression.
@@ -21,7 +21,7 @@ class Event<Rest> {}
 	the items you are extracting with `var`. For example:
 
 	```haxe
-	var something:kit.ds.Option = Some('foo');
+	var something:kit.ds.Maybe = Some('foo');
 	something.extract(Some(var foo));
 	trace(foo); // => "foo"
 	```
@@ -32,7 +32,7 @@ class Event<Rest> {}
 	following code will *not* throw an exception:
 
 	```haxe
-	var something:kit.ds.Option = None;
+	var something:kit.ds.Maybe = None;
 	something.extract(Some(var foo = 'default'));
 	trace(foo); // => "default"
 	```
@@ -52,7 +52,7 @@ macro function extract(input, match) {
 	expression that will be executed instead.
 
 	```haxe
-	var foo:Option<String> = None;
+	var foo:Maybe<String> = None;
 	foo.ifExtract(Some(var value), {
 		trace(value); // does not run
 	}, {

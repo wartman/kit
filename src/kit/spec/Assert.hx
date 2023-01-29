@@ -1,9 +1,9 @@
 package kit.spec;
 
-import kit.ds.Option;
+import kit.ds.Maybe;
 
 final class Assert {
-	static var currentSpec:Option<Spec> = None;
+	static var currentSpec:Maybe<Spec> = None;
 
 	public static function bind(spec:Spec) {
 		switch currentSpec {

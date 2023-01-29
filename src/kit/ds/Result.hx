@@ -3,9 +3,6 @@ package kit.ds;
 import haxe.Exception;
 import kit.core.Lazy;
 
-/**
-	Represents a value that can either succeed or fail.
-**/
 @:using(kit.ds.Result.ResultTools)
 enum Result<T> {
 	Success(value:T);

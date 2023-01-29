@@ -1,10 +1,7 @@
 package kit.core;
 
-import kit.ds.Option;
+import kit.ds.Maybe;
 
-/**
-	A value that is lazily resolved once.
-**/
 @:forward(get)
 abstract Lazy<T>(LazyObject<T>) {
 	@:from public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
@@ -26,7 +23,7 @@ typedef LazyObject<T> = {
 
 class SimpleLazyObject<T> {
 	final resolve:() -> T;
-	var value:Option<T> = None;
+	var value:Maybe<T> = None;
 
 	public function new(resolve) {
 		this.resolve = resolve;

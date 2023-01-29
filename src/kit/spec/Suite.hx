@@ -3,7 +3,7 @@ package kit.spec;
 import kit.spec.Result;
 import kit.spec.Spec;
 import kit.async.Task;
-import kit.ds.Option;
+import kit.ds.Maybe;
 
 using Type;
 using kit.core.Sugar;
@@ -11,7 +11,7 @@ using kit.core.Sugar;
 abstract class Suite {
 	final events:Events;
 	final suites:Array<SuiteSection> = [];
-	var currentSuite:Option<SuiteSection> = None;
+	var currentSuite:Maybe<SuiteSection> = None;
 
 	final public function new(events) {
 		this.events = events;
