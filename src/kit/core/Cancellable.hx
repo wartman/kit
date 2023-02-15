@@ -5,8 +5,6 @@ interface CancellableLink {
 	public function cancel():Void;
 }
 
-// @todo: Decide if this and Disposable should be merged.
-
 @:forward
 abstract Cancellable(CancellableLink) from CancellableLink {
 	@:from public static function ofArray(items:Array<Cancellable>):Cancellable {

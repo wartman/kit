@@ -8,7 +8,7 @@ function main():Void {
 		trackProgress: true
 	});
 	var runner = new Runner();
-	var cancel = runner.addReporter(reporter);
+	runner.addReporter(reporter);
 
 	runner.add(spec.async.FutureSuite);
 	runner.add(spec.async.TaskSuite);

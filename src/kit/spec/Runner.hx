@@ -1,5 +1,6 @@
 package kit.spec;
 
+import kit.Api.Future;
 import kit.async.Task;
 
 final class Runner {
@@ -20,9 +21,14 @@ final class Runner {
 	}
 
 	public function run() {
-		Task.sequence(...suites.map(s -> s.run())).handle(result -> switch result {
-			case Success(results): events.onComplete.dispatch(new Result(results));
-			case Failure(exception): events.onFailure.dispatch(exception);
-		});
+		return new Future(activate -> {
+			Task.sequence(...suites.map(s -> s.run())).handle(result -> {
+				switch result {
+					case Success(results): events.onComplete.dispatch(new Result(results));
+					case Failure(exception): events.onFailure.dispatch(exception);
+				}
+				activate(result);
+			});
+		}).eager();
 	}
 }
