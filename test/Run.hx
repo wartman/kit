@@ -20,6 +20,7 @@ function main() {
 	testFuture();
 	testExtractSugar();
 	testPipeSugar();
+	testNullSugar();
 	testEvent();
 	testLazy();
 }
