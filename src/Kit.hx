@@ -1,6 +1,5 @@
 @:noUsing typedef Maybe<T> = kit.Maybe<T>;
 @:noUsing typedef Result<T> = kit.Result<T>;
-@:noUsing typedef Empty = kit.Empty;
 @:noUsing typedef Lazy<T> = kit.Lazy<T>;
 @:noUsing typedef Cancellable = kit.Cancellable;
 @:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;
@@ -12,15 +11,18 @@
 @:noUsing class Event<Rest> {}
 
 /**
-	Deconstructs an expression.
+	Convert any nullable value into a kit.Maybe.
+**/
+inline extern function toMaybe<T>(value:Null<T>):Maybe<T> {
+	return kit.Sugar.toMaybe(value);
+}
 
-	Note that there are a few ways in which this differs from a 
-	pattern in a switch statement. Most importantly, you *must* prefix
-	the items you are extracting with `var`. For example:
+/**
+	Deconstructs an expression.
 
 	```haxe
 	var something:kit.Maybe = Some('foo');
-	something.extract(Some(var foo));
+	something.extract(Some(foo));
 	trace(foo); // => "foo"
 	```
 
@@ -31,7 +33,7 @@
 
 	```haxe
 	var something:kit.Maybe = None;
-	something.extract(Some(var foo = 'default'));
+	something.extract(Some(foo = 'default'));
 	trace(foo); // => "default"
 	```
 
@@ -51,7 +53,7 @@ macro function extract(input, match) {
 
 	```haxe
 	var foo:Maybe<String> = None;
-	foo.ifExtract(Some(var value), {
+	foo.ifExtract(Some(value), {
 		trace(value); // does not run
 	}, {
 		trace('Runs');

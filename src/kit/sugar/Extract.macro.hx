@@ -64,11 +64,27 @@ private function extractAssignments(expr:Expr):ExtractedExpr {
 
 	function process(expr:Expr) {
 		switch expr.expr {
+			case ECall(_, params):
+				// @todo: Are the other special cases we need to handle?
+				for (param in params) process(param);
 			case EConst(CIdent('_')):
-			case EVars([decl]):
-				var name = decl.name;
-				if (decl.expr == null) hasFallback = false;
-				assignments.push({name: name, decl: decl, pos: expr.pos});
+			case EConst(CIdent(name)):
+				hasFallback = false;
+				assignments.push({
+					name: name,
+					decl: {name: name},
+					pos: expr.pos
+				});
+				expr.expr = EConst(CIdent('_$name'));
+			case EBinop(OpAssign, {
+				expr: EConst(CIdent(name)),
+				pos: pos
+			}, e2):
+				assignments.push({
+					name: name,
+					decl: {name: name, expr: e2},
+					pos: pos
+				});
 				expr.expr = EConst(CIdent('_$name'));
 			default:
 				expr.iter(process);

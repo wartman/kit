@@ -26,11 +26,11 @@ function main() {
 
 private function testResult() {
 	var result:Result<String> = Success('Ok');
-	result.map(value -> value + ' Ok').extract(Success(var value = 'Failed'));
+	result.map(value -> value + ' Ok').extract(Success(value = 'Failed'));
 	assert(value == 'Ok Ok');
 
 	var result:Result<String> = Failure(new Exception('Failed'));
-	result.map(value -> value + ' Ok').extract(Failure(var exception));
+	result.map(value -> value + ' Ok').extract(Failure(exception));
 	assert(exception.message == 'Failed');
 }
 
@@ -52,42 +52,42 @@ private function testFuture() {
 		called++;
 		activate('bar');
 	})).handle(values -> {
-		values.extract([var foo, var bar]);
+		values.extract([foo, bar]);
 		assert(called == 2);
 		assert(foo == 'foo');
 		assert(bar == 'bar');
 	});
 
 	Future.parallel(new Future(activate -> activate('foo')), new Future(activate -> activate('bar'))).handle(values -> {
-		values.extract([var foo, var bar]);
+		values.extract([foo, bar]);
 		assert(foo == 'foo');
 		assert(bar == 'bar');
 	});
 
 	var future = new Future(activate -> activate('string'));
-	var link = future.handle(value -> Empty);
+	var link = future.handle(value -> null);
 	assert(link is CancellableLink);
 }
 
 private function testExtractSugar() {
 	var foo:{a:String, b:Int} = {a: 'a', b: 1};
-	foo.extract({a: var a, b:var b});
+	foo.extract({a: a, b: b});
 	assert(a == 'a');
 	assert(b == 1);
 
 	var foo:Maybe<String> = Some('foo');
-	foo.extract(Some(var actual));
+	foo.extract(Some(actual));
 	assert(actual == 'foo');
 
 	var foo:Maybe<String> = None;
-	foo.extract(Some(var actual = 'foo'));
+	foo.extract(Some(actual = 'foo'));
 	assert(actual == 'foo');
 
 	var foo:Maybe<String> = Some('foo');
-	foo.ifExtract(Some(var value), assert(value == 'foo'));
+	foo.ifExtract(Some(value), assert(value == 'foo'));
 
 	var foo:Maybe<String> = None;
-	foo.ifExtract(Some(var value), {
+	foo.ifExtract(Some(value), {
 		assert(value == 'foo');
 	}, {
 		assert(foo == None);
@@ -96,7 +96,7 @@ private function testExtractSugar() {
 	// Make sure nothing leaks into the parent scope:
 	var foo:Maybe<String> = Some('foo');
 	var value:String = 'bar';
-	foo.ifExtract(Some(var value), assert(value == 'foo'));
+	foo.ifExtract(Some(value), assert(value == 'foo'));
 	assert(value == 'bar');
 }
 
@@ -109,6 +109,12 @@ private function testPipeSugar() {
 	// Can use lambdas/functions with a single arg:
 	var result = 'foo'.pipe(add(_, 'bar'), str -> str + 'ok', add('ok', _));
 	assert(result == 'okfoobarok');
+}
+
+private function testNullSugar() {
+	var foo:Null<String> = 'foo';
+	foo.toMaybe().extract(Some(value));
+	assert(value == 'foo');
 }
 
 private function testEvent() {
