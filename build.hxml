@@ -1,6 +1,7 @@
 -cp src
 -cp test
 
+-D debug
 -D js-es=6
 # -D analyzer-optimize
 

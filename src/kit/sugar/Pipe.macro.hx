@@ -1,4 +1,4 @@
-package kit.core.sugar;
+package kit.sugar;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;

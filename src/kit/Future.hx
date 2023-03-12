@@ -1,6 +1,6 @@
-package kit.async;
+package kit;
 
-import kit.core.Cancellable;
+import kit.Cancellable;
 import haxe.Exception;
 
 typedef FutureActivator<T> = (activate:(value:T) -> Void) -> Void;

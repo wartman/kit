@@ -1,15 +1,13 @@
-package kit;
-
-@:noUsing typedef Maybe<T> = kit.ds.Maybe<T>;
-@:noUsing typedef Result<T> = kit.ds.Result<T>;
-@:noUsing typedef Empty = kit.ds.Empty;
-@:noUsing typedef Lazy<T> = kit.core.Lazy<T>;
-@:noUsing typedef Cancellable = kit.core.Cancellable;
-@:noUsing typedef CancellableLink = kit.core.Cancellable.CancellableLink;
-@:noUsing typedef Task<T> = kit.async.Task<T>;
-@:noUsing typedef Future<T> = kit.async.Future<T>;
+@:noUsing typedef Maybe<T> = kit.Maybe<T>;
+@:noUsing typedef Result<T> = kit.Result<T>;
+@:noUsing typedef Empty = kit.Empty;
+@:noUsing typedef Lazy<T> = kit.Lazy<T>;
+@:noUsing typedef Cancellable = kit.Cancellable;
+@:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;
+@:noUsing typedef Task<T> = kit.Task<T>;
+@:noUsing typedef Future<T> = kit.Future<T>;
 #if !macro
-@:genericBuild(kit.event.EventBuilder.build())
+@:genericBuild(kit.internal.EventBuilder.build())
 #end
 @:noUsing class Event<Rest> {}
 
@@ -21,7 +19,7 @@ package kit;
 	the items you are extracting with `var`. For example:
 
 	```haxe
-	var something:kit.ds.Maybe = Some('foo');
+	var something:kit.Maybe = Some('foo');
 	something.extract(Some(var foo));
 	trace(foo); // => "foo"
 	```
@@ -32,7 +30,7 @@ package kit;
 	following code will *not* throw an exception:
 
 	```haxe
-	var something:kit.ds.Maybe = None;
+	var something:kit.Maybe = None;
 	something.extract(Some(var foo = 'default'));
 	trace(foo); // => "default"
 	```
@@ -41,7 +39,7 @@ package kit;
 	probably be to provide defaults.
 **/
 macro function extract(input, match) {
-	return kit.core.sugar.Extract.createExtractExpr(input, match);
+	return kit.sugar.Extract.createExtractExpr(input, match);
 }
 
 /**
@@ -61,14 +59,14 @@ macro function extract(input, match) {
 	```
 **/
 macro function ifExtract(input, match, body, ?otherwise) {
-	return kit.core.sugar.Extract.createIfExtractExpr(input, match, body, otherwise);
+	return kit.sugar.Extract.createIfExtractExpr(input, match, body, otherwise);
 }
 
 /**
 	Casts the given expression to the given type.
 **/
 macro function as(input, type) {
-	return kit.core.sugar.Type.createCast(input, type);
+	return kit.sugar.Type.createCast(input, type);
 }
 
 /**
@@ -77,5 +75,5 @@ macro function as(input, type) {
 	@todo: A better description.
 **/
 macro function pipe(...exprs) {
-	return kit.core.sugar.Pipe.createPipe(exprs.toArray());
+	return kit.sugar.Pipe.createPipe(exprs.toArray());
 }

@@ -1,4 +1,4 @@
-package kit.event;
+package kit.internal;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -19,7 +19,7 @@ private function buildEvent(params:Array<Type>):ComplexType {
 	params = params.filter(p -> p.toString() != 'Void');
 
 	var paramLength = params.length;
-	var pack = ['kit', 'event'];
+	var pack = ['kit'];
 	var name = 'Event_${paramLength}';
 	var type = TPath({
 		pack: pack,
@@ -27,7 +27,7 @@ private function buildEvent(params:Array<Type>):ComplexType {
 		params: [for (t in params) TPType(t.toComplexType())]
 	});
 
-	if (typeExists('kit.event.${name}')) {
+	if (typeExists('kit.${name}')) {
 		return type;
 	}
 
@@ -54,7 +54,7 @@ private function buildEvent(params:Array<Type>):ComplexType {
 			pack: pack,
 			name: "Event",
 			sub: "EventBase",
-			params: [TPType(TFunction(superClassFunctionArgs, macro:Void))]
+			params: [TPType(TFunction(superClassFunctionArgs, macro :Void))]
 		}, [], false, true, false),
 		fields: [
 			{
@@ -63,7 +63,7 @@ private function buildEvent(params:Array<Type>):ComplexType {
 				pos: pos,
 				kind: FFun({
 					args: dispatchArgs,
-					ret: macro:Void,
+					ret: macro :Void,
 					expr: macro {
 						startDispatch();
 						var sub = head;

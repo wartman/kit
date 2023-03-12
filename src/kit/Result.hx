@@ -1,9 +1,9 @@
-package kit.ds;
+package kit;
 
 import haxe.Exception;
-import kit.core.Lazy;
+import kit.Lazy;
 
-@:using(kit.ds.Result.ResultTools)
+@:using(kit.Result.ResultTools)
 enum Result<T> {
 	Success(value:T);
 	Failure(exception:Exception);

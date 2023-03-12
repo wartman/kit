@@ -1,9 +1,9 @@
-package kit.async;
+package kit;
 
 import haxe.Exception;
-import kit.ds.Result;
-import kit.core.Lazy;
-import kit.core.Cancellable;
+import kit.Result;
+import kit.Lazy;
+import kit.Cancellable;
 
 abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {

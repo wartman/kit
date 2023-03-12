@@ -1,6 +1,6 @@
-package kit.core;
+package kit;
 
-import kit.ds.Maybe;
+import kit.Maybe;
 
 @:forward(get)
 abstract Lazy<T>(LazyObject<T>) {

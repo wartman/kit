@@ -1,16 +1,11 @@
-package kit.event;
+package kit;
 
 import haxe.Constraints.Function;
-import kit.core.Cancellable;
+import kit.Cancellable;
 
-/**
-	A generic event (really a "signal", but that term conflicts with some other
-	things). Can have as many params as you'd like, thanks to a Generic Build 
-	macro.
+// Implementation (including the genericBuild macro) from: https://gist.github.com/nadako/b086569b9fffb759a1b5
 
-	Implementation (including the genericBuild macro) from: https://gist.github.com/nadako/b086569b9fffb759a1b5
-**/
-@:genericBuild(kit.event.EventBuilder.build())
+@:genericBuild(kit.internal.EventBuilder.build())
 class Event<Rest> {}
 
 abstract class EventBase<T:Function> implements CancellableLink {
@@ -113,7 +108,7 @@ abstract class EventBase<T:Function> implements CancellableLink {
 	}
 }
 
-@:allow(kit.event.EventBase)
+@:allow(kit.EventBase)
 class EventSubscription<T:Function> implements CancellableLink {
 	final listener:T;
 	final once:Bool;

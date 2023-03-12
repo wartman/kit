@@ -1,4 +1,4 @@
-package kit.core;
+package kit;
 
 interface CancellableLink {
 	public function isCanceled():Bool;

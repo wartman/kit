@@ -1,4 +1,4 @@
-package kit.ds;
+package kit;
 
 enum abstract Empty(Null<Dynamic>) {
 	@:from static inline function ofAny<T>(t:Null<T>):Empty {
