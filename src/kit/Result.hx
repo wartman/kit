@@ -35,10 +35,24 @@ class ResultTools {
 		}
 	}
 
+	public static function mapException<T, E:Exception>(result:Result<T>, transform:(e:Exception)->E):Result<T> {
+		return switch result {
+			case Success(value): Success(value);
+			case Failure(exception): Failure(transform(exception));
+		}
+	}
+
 	public static function or<T>(result:Result<T>, value:Lazy<T>):T {
 		return switch result {
 			case Success(value): value;
 			case Failure(_): value.get();
 		}
+	}
+
+	public static function orThrow<T>(result:Result<T>, ?message:String):T {
+		return message == null ? unwrap(result) : switch result {
+			case Success(value): value;
+			case Failure(_): throw message;
+		};
 	}
 }

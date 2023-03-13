@@ -16,6 +16,7 @@ using Kit;
 function main() {
 	print('Starting tests...');
 
+	// @todo: These should all be async?
 	testResult();
 	testFuture();
 	testTask();

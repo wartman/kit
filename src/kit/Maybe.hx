@@ -25,10 +25,17 @@ class MaybeTools {
 		return transform(maybe);
 	}
 
-	public static function or<T>(maybe:Maybe<T>, def:T):T {
+	public static function or<T>(maybe:Maybe<T>, value:Lazy<T>):T {
 		return switch maybe {
-			case Some(v): v;
-			case None: def;
+			case Some(value): value;
+			case None: value.get();
+		}
+	}
+
+	public static function orThrow<T>(maybe:Maybe<T>, ?message:String):T {
+		return switch maybe {
+			case Some(value): value;
+			case None: throw message == null ? 'No value exists' : message;
 		}
 	}
 }
