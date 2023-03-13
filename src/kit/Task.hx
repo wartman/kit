@@ -102,10 +102,6 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		});
 	}
 
-	public inline function or(value:Lazy<T>):Future<T> {
-		return this.map(result -> result.or(value));
-	}
-
 	public inline function handle(handler:(result:Result<T>) -> Void):Cancellable {
 		return this.handle(handler);
 	}

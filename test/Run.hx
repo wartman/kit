@@ -18,6 +18,7 @@ function main() {
 
 	testResult();
 	testFuture();
+	testTask();
 	testExtractSugar();
 	testPipeSugar();
 	testNullSugar();
@@ -68,6 +69,23 @@ private function testFuture() {
 	var future = new Future(activate -> activate('string'));
 	var link = future.handle(value -> null);
 	assert(link is CancellableLink);
+}
+
+private function testTask() {
+	var foo:Task<String> = 'foo';
+	foo.next(foo -> foo + 'bar').handle(outcome -> {
+		outcome.extract(Success(value));
+		assert(value == 'foobar');
+	});
+
+	var foo:Task<String> = 'foo';
+	foo.next(foo -> new Exception('expected')).recover(e -> {
+		assert(e.message == 'expected');
+		Task.ofSync('foo');
+	}).handle(outcome -> {
+		outcome.extract(Success(value));
+		assert(value == 'foo');
+	});
 }
 
 private function testExtractSugar() {
