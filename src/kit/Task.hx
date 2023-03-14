@@ -2,7 +2,6 @@ package kit;
 
 import haxe.Exception;
 import kit.Result;
-import kit.Lazy;
 import kit.Cancellable;
 
 abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
@@ -104,5 +103,9 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 
 	public inline function handle(handler:(result:Result<T>) -> Void):Cancellable {
 		return this.handle(handler);
+	}
+
+	@:to public inline function toFuture():Future<Result<T>> {
+		return this;
 	}
 }

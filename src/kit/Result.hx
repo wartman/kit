@@ -35,7 +35,7 @@ class ResultTools {
 		}
 	}
 
-	public static function mapException<T, E:Exception>(result:Result<T>, transform:(e:Exception)->E):Result<T> {
+	public static function mapException<T, E:Exception>(result:Result<T>, transform:(e:Exception) -> E):Result<T> {
 		return switch result {
 			case Success(value): Success(value);
 			case Failure(exception): Failure(transform(exception));
