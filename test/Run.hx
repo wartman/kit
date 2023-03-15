@@ -82,7 +82,7 @@ private function testTask() {
 	var foo:Task<String> = 'foo';
 	foo.next(foo -> new Exception('expected')).recover(e -> {
 		assert(e.message == 'expected');
-		Task.ofSync('foo');
+		Task.resolve('foo');
 	}).handle(outcome -> {
 		outcome.extract(Success(value));
 		assert(value == 'foo');

@@ -4,7 +4,8 @@ import haxe.Exception;
 import kit.Result;
 import kit.Cancellable;
 
-abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
+@:forward(map, flatMap)
+abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> {
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
 		return new Future(activate -> {
 			var failed:Bool = false;
@@ -54,37 +55,37 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 
 	#if js
 	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
-		return new Task(new Future(activate -> {
+		return new Task(activate -> {
 			promise.then(value -> activate(Success(value))).catchError(e -> switch e is Exception {
 				case false: activate(Failure(new Exception('Unknown error: ${Std.string(e)}')));
 				case true: activate(Failure(e));
 			});
-		}));
+		});
 	}
 	#end
 
 	@:from public static function ofResult<T>(result:Result<T>) {
-		return new Task(new Future(activate -> activate(result)));
+		return new Task(activate -> activate(result));
 	}
 
-	@:from public static function ofFutureResult<T>(future:Future<Result<T>>) {
-		return new Task(future);
+	@:from public static function ofFuture<T>(future:Future<T>):Task<T> {
+		return future.map(value -> Success(value));
 	}
 
-	@:from public static function ofFuture<T>(future:Future<T>) {
-		return new Task(future.map(value -> Success(value)));
+	@:from public static function ofException<T, E:Exception>(e:E):Task<T> {
+		return new Task(activate -> activate(Failure(e)));
 	}
 
-	@:from public static function ofException<T>(e:Exception):Task<T> {
-		return new Task(new Future(activate -> activate(Failure(e))));
+	@:from public static function resolve<T>(value:T) {
+		return new Task(activate -> activate(Success(value)));
 	}
 
-	@:from public static function ofSync<T>(value:T) {
-		return new Task(new Future(activate -> activate(Success(value))));
+	@:from public static function reject(e) {
+		return new Task(activate -> activate(Failure(e)));
 	}
 
-	public inline function new(future) {
-		this = future;
+	public inline function new(activator) {
+		this = new Future(activator);
 	}
 
 	public inline function next<R>(handler:(value:T) -> Task<R>):Task<R> {
@@ -94,9 +95,9 @@ abstract Task<T>(Future<Result<T>>) to Future<Result<T>> {
 		});
 	}
 
-	public inline function recover(handler:(exception:Exception) -> Task<T>):Task<T> {
+	public inline function recover(handler:(exception:Exception) -> Future<T>):Future<T> {
 		return this.flatMap(result -> switch result {
-			case Success(value): Task.ofResult(Success(value));
+			case Success(value): Future.immediate(value);
 			case Failure(exception): handler(exception);
 		});
 	}
