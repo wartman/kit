@@ -58,17 +58,6 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 		});
 	}
 
-	#if js
-	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
-		return new Task(activate -> {
-			promise.then(value -> activate(Success(value))).catchError(e -> switch e is Exception {
-				case false: activate(Failure(new Exception('Unknown error: ${Std.string(e)}')));
-				case true: activate(Failure(e));
-			});
-		});
-	}
-	#end
-
 	@:from public static function ofResult<T>(result:Result<T>) {
 		return new Task(activate -> activate(result));
 	}
@@ -114,4 +103,30 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 	@:to public inline function toFuture():Future<Result<T>> {
 		return this;
 	}
+
+	@:to public inline function toDynamic():Task<Dynamic> {
+		return this;
+	}
+
+	@:to public inline function toNothing():Task<Nothing> {
+		return next(_ -> Nothing);
+	}
+
+	#if js
+	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
+		return new Task(activate -> {
+			promise.then(value -> activate(Success(value))).catchError(e -> switch e is Exception {
+				case false: activate(Failure(new Exception('Unknown error: ${Std.string(e)}')));
+				case true: activate(Failure(e));
+			});
+		});
+	}
+
+	@:to public function toJsPromise():js.lib.Promise<T> {
+		return new js.lib.Promise((res, rej) -> handle(result -> switch result {
+			case Success(value): res(value);
+			case Failure(error): rej(error);
+		}));
+	}
+	#end
 }
