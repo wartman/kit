@@ -7,9 +7,6 @@ using Kit;
 #if !debug
 #error "-D debug must be set for testing to work"
 #end
-#if macro
-#error 'Cannot be run in macro context'
-#end
 // Note: these tests intentionally only require Kit's builtin assert
 // function. We may move to something more robust later, but I want
 // no dependencies in the core Kit package if possible.

@@ -6,6 +6,10 @@ import kit.Cancellable;
 
 @:forward(map, flatMap)
 abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> {
+	public static function nothing():Task<Nothing> {
+		return new Task(activate -> activate(Success(Nothing)));
+	}
+
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
 		return new Future(activate -> {
 			var failed:Bool = false;
