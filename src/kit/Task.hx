@@ -115,7 +115,7 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 	#if js
 	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
 		return new Task(activate -> {
-			promise.then(value -> activate(Success(value))).catchError(e -> switch e is Exception {
+			promise.then(value -> activate(Success(value)), e -> switch e is Exception {
 				case false: activate(Failure(new Exception('Unknown error: ${Std.string(e)}')));
 				case true: activate(Failure(e));
 			});
