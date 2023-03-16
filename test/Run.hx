@@ -17,6 +17,7 @@ function main() {
 	testResult();
 	testFuture();
 	testTask();
+	testNothing();
 	testExtractSugar();
 	testPipeSugar();
 	testNullSugar();
@@ -84,6 +85,11 @@ private function testTask() {
 		outcome.extract(Success(value));
 		assert(value == 'foo');
 	});
+}
+
+private function testNothing() {
+	var foo:Nothing = 'foo';
+	assert(foo == Nothing);
 }
 
 private function testExtractSugar() {

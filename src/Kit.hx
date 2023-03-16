@@ -5,6 +5,7 @@
 @:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;
 @:noUsing typedef Task<T> = kit.Task<T>;
 @:noUsing typedef Future<T> = kit.Future<T>;
+@:noUsing typedef Nothing = kit.Nothing;
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end

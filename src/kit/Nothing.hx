@@ -1,5 +1,9 @@
 package kit;
 
-enum abstract Nothing(Null<Dynamic>) from Dynamic {
-	final Nothing = null;
+enum abstract Nothing(Int) {
+	final Nothing = 0;
+
+	@:from public inline static function fromDynamic<T:Dynamic>(value:T):Nothing {
+		return Nothing;
+	}
 }

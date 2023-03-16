@@ -3,6 +3,7 @@ package kit;
 import haxe.Exception;
 import kit.Result;
 import kit.Cancellable;
+import kit.Nothing;
 
 @:forward(map, flatMap)
 abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> {
