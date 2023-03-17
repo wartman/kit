@@ -6,9 +6,9 @@ import kit.Cancellable;
 import kit.Nothing;
 
 @:forward(map, flatMap)
-abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> {
+abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T>> {
 	public static function nothing():Task<Nothing> {
-		return new Task(activate -> activate(Success(Nothing)));
+		return new Task(activate -> activate(Ok(Nothing)));
 	}
 
 	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
@@ -21,15 +21,15 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 			for (index => task in tasks) {
 				if (failed) break;
 				var link = task.handle(r -> if (!failed) switch r {
-					case Success(value):
+					case Ok(value):
 						result[index] = value;
 						count++;
-						if (count >= tasks.length) activate(Success(result));
-					case Failure(exception):
+						if (count >= tasks.length) activate(Ok(result));
+					case Error(exception):
 						failed = true;
 						for (link in links) if (!link.isCanceled()) link.cancel();
 						links = [];
-						activate(Failure(exception));
+						activate(Error(exception));
 				});
 				links.push(link);
 			}
@@ -43,14 +43,14 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 
 			function poll(index:Int) {
 				if (failed) return;
-				if (index == tasks.length) return activate(Success(result));
+				if (index == tasks.length) return activate(Ok(result));
 				tasks[index].handle(r -> if (!failed) switch r {
-					case Success(value):
+					case Ok(value):
 						result[index] = value;
 						poll(index + 1);
-					case Failure(e):
+					case Error(e):
 						failed = true;
-						activate(Failure(e));
+						activate(Error(e));
 				});
 			}
 
@@ -58,24 +58,24 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 		});
 	}
 
-	@:from public static function ofResult<T>(result:Result<T>) {
+	@:from public static function ofProduct<T>(result:Product<T>) {
 		return new Task(activate -> activate(result));
 	}
 
 	@:from public static function ofFuture<T>(future:Future<T>):Task<T> {
-		return future.map(value -> Success(value));
+		return future.map(value -> Ok(value));
 	}
 
-	@:from public static function ofException<T, E:Exception>(e:E):Task<T> {
-		return new Task(activate -> activate(Failure(e)));
+	@:from public static function ofFailure<T>(failure:Failure):Task<T> {
+		return new Task(activate -> activate(Error(failure)));
 	}
 
 	@:from public static function resolve<T>(value:T) {
-		return new Task(activate -> activate(Success(value)));
+		return new Task(activate -> activate(Ok(value)));
 	}
 
 	@:from public static function reject(e) {
-		return new Task(activate -> activate(Failure(e)));
+		return new Task(activate -> activate(Error(e)));
 	}
 
 	public inline function new(activator) {
@@ -84,23 +84,23 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 
 	public inline function next<R>(handler:(value:T) -> Task<R>):Task<R> {
 		return this.flatMap(result -> switch result {
-			case Success(value): handler(value);
-			case Failure(exception): Task.ofException(exception);
+			case Ok(value): handler(value);
+			case Error(error): Task.ofFailure(error);
 		});
 	}
 
-	public inline function recover(handler:(exception:Exception) -> Future<T>):Future<T> {
+	public inline function recover(handler:(failure:Failure) -> Future<T>):Future<T> {
 		return this.flatMap(result -> switch result {
-			case Success(value): Future.immediate(value);
-			case Failure(exception): handler(exception);
+			case Ok(value): Future.immediate(value);
+			case Error(failure): handler(failure);
 		});
 	}
 
-	public inline function handle(handler:(result:Result<T>) -> Void):Cancellable {
+	public inline function handle(handler:(result:Product<T>) -> Void):Cancellable {
 		return this.handle(handler);
 	}
 
-	@:to public inline function toFuture():Future<Result<T>> {
+	@:to public inline function toFuture():Future<Product<T>> {
 		return this;
 	}
 
@@ -115,17 +115,17 @@ abstract Task<T>(Future<Result<T>>) from Future<Result<T>> to Future<Result<T>> 
 	#if js
 	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
 		return new Task(activate -> {
-			promise.then(value -> activate(Success(value)), e -> switch e is Exception {
-				case false: activate(Failure(new Exception('Unknown error: ${Std.string(e)}')));
-				case true: activate(Failure(e));
+			promise.then(value -> activate(Ok(value)), e -> switch e is Exception {
+				case false: activate(Error(new Failure(InternalError, 'Unknown error: ${Std.string(e)}')));
+				case true: activate(Error(e));
 			});
 		});
 	}
 
 	@:to public function toJsPromise():js.lib.Promise<T> {
 		return new js.lib.Promise((res, rej) -> handle(result -> switch result {
-			case Success(value): res(value);
-			case Failure(error): rej(error);
+			case Ok(value): res(value);
+			case Error(error): rej(error);
 		}));
 	}
 	#end

@@ -1,5 +1,5 @@
 @:noUsing typedef Maybe<T> = kit.Maybe<T>;
-@:noUsing typedef Result<T> = kit.Result<T>;
+@:noUsing typedef Result<T, E> = kit.Result<T, E>;
 @:noUsing typedef Lazy<T> = kit.Lazy<T>;
 @:noUsing typedef Cancellable = kit.Cancellable;
 @:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;

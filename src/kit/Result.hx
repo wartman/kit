@@ -1,58 +1,51 @@
 package kit;
 
-import haxe.Exception;
-import kit.Lazy;
-
 @:using(kit.Result.ResultTools)
-enum Result<T> {
-	Success(value:T);
-	Failure(exception:Exception);
+enum Result<T, E> {
+	Ok(value:T);
+	Error(error:E);
 }
 
 class ResultTools {
-	public static function attempt<T>(value:Lazy<T>):Result<T> {
-		return try Success(value.get()) catch (e) Failure(e);
-	}
-
-	public static function unwrap<T>(result:Result<T>):T {
+	public static function unwrap<T, E>(result:Result<T, E>):T {
 		return switch result {
-			case Success(value): value;
-			case Failure(exception): throw exception;
+			case Ok(value): value;
+			case Error(error): throw error;
 		}
 	}
 
-	public static function map<T, R>(result:Result<T>, transform:(value:T) -> R):Result<R> {
+	public static function map<T, E, R>(result:Result<T, E>, transform:(value:T) -> R):Result<R, E> {
 		return switch result {
-			case Success(value): Success(transform(value));
-			case Failure(exception): Failure(exception);
+			case Ok(value): Ok(transform(value));
+			case Error(error): Error(error);
 		}
 	}
 
-	public static function flatMap<T, R>(result:Result<T>, transform:(value:T) -> Result<R>):Result<R> {
+	public static function flatMap<T, E, R>(result:Result<T, E>, transform:(value:T) -> Result<R, E>):Result<R, E> {
 		return switch result {
-			case Success(value): transform(value);
-			case Failure(exception): Failure(exception);
+			case Ok(value): transform(value);
+			case Error(error): Error(error);
 		}
 	}
 
-	public static function mapException<T, E:Exception>(result:Result<T>, transform:(e:Exception) -> E):Result<T> {
+	public static function mapError<T, E, R>(result:Result<T, E>, transform:(e:E) -> R):Result<T, R> {
 		return switch result {
-			case Success(value): Success(value);
-			case Failure(exception): Failure(transform(exception));
+			case Ok(value): Ok(value);
+			case Error(error): Error(transform(error));
 		}
 	}
 
-	public static function or<T>(result:Result<T>, value:Lazy<T>):T {
+	public static function or<T, E>(result:Result<T, E>, value:Lazy<T>):T {
 		return switch result {
-			case Success(value): value;
-			case Failure(_): value.get();
+			case Ok(value): value;
+			case Error(_): value.get();
 		}
 	}
 
-	public static function orThrow<T>(result:Result<T>, ?message:String):T {
+	public static function orThrow<T, E>(result:Result<T, E>, ?message:String):T {
 		return message == null ? unwrap(result) : switch result {
-			case Success(value): value;
-			case Failure(_): throw message;
+			case Ok(value): value;
+			case Error(_): throw message;
 		};
 	}
 }

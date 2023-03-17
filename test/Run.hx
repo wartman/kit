@@ -1,3 +1,4 @@
+import kit.Failure;
 import haxe.Exception;
 import kit.Assert;
 import Helpers;
@@ -26,13 +27,13 @@ function main() {
 }
 
 private function testResult() {
-	var result:Result<String> = Success('Ok');
-	result.map(value -> value + ' Ok').extract(Success(value = 'Failed'));
+	var result:Result<String, String> = Ok('Ok');
+	result.map(value -> value + ' Ok').extract(Ok(value = 'Failed'));
 	assert(value == 'Ok Ok');
 
-	var result:Result<String> = Failure(new Exception('Failed'));
-	result.map(value -> value + ' Ok').extract(Failure(exception));
-	assert(exception.message == 'Failed');
+	var result:Result<String, String> = Error('Failed');
+	result.map(value -> value + ' Ok').extract(Error(message));
+	assert(message == 'Failed');
 }
 
 // @todo: This test should return async.
@@ -73,16 +74,16 @@ private function testFuture() {
 private function testTask() {
 	var foo:Task<String> = 'foo';
 	foo.next(foo -> foo + 'bar').handle(outcome -> {
-		outcome.extract(Success(value));
+		outcome.extract(Ok(value));
 		assert(value == 'foobar');
 	});
 
 	var foo:Task<String> = 'foo';
-	foo.next(foo -> new Exception('expected')).recover(e -> {
+	foo.next(foo -> new Failure(InternalError, 'expected')).recover(e -> {
 		assert(e.message == 'expected');
 		Task.resolve('foo');
 	}).handle(outcome -> {
-		outcome.extract(Success(value));
+		outcome.extract(Ok(value));
 		assert(value == 'foo');
 	});
 }
