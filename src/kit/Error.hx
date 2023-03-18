@@ -1,6 +1,9 @@
 package kit;
 
-enum abstract FailureCode(Int) from Int {
+import haxe.Exception;
+import haxe.PosInfos;
+
+enum abstract ErrorCode(Int) from Int {
 	final BadRequest = 400;
 	final Unauthorized = 401;
 	final Forbidden = 403;
@@ -19,12 +22,21 @@ enum abstract FailureCode(Int) from Int {
 	final LoopDetected = 508;
 }
 
-class Failure {
-	public final code:FailureCode;
+class Error {
+	public final code:ErrorCode;
 	public final message:String;
 
 	public function new(code, message) {
 		this.code = code;
 		this.message = message;
+	}
+
+	// Does this make sense?
+	public inline function asException(?pos:PosInfos) {
+		return new Exception(code + ' ' + message, pos);
+	}
+
+	public inline function throwError(?pos:PosInfos) {
+		throw asException(pos);
 	}
 }

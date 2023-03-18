@@ -1,4 +1,4 @@
-import kit.Failure;
+import kit.Error;
 import haxe.Exception;
 import kit.Assert;
 import Helpers;
@@ -79,7 +79,7 @@ private function testTask() {
 	});
 
 	var foo:Task<String> = 'foo';
-	foo.next(foo -> new Failure(InternalError, 'expected')).recover(e -> {
+	foo.next(foo -> new Error(InternalError, 'expected')).recover(e -> {
 		assert(e.message == 'expected');
 		Task.resolve('foo');
 	}).handle(outcome -> {

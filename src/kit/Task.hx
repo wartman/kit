@@ -66,8 +66,8 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 		return future.map(value -> Ok(value));
 	}
 
-	@:from public static function ofFailure<T>(failure:Failure):Task<T> {
-		return new Task(activate -> activate(Error(failure)));
+	@:from public static function ofError<T>(error:Error):Task<T> {
+		return new Task(activate -> activate(Error(error)));
 	}
 
 	@:from public static function resolve<T>(value:T) {
@@ -85,14 +85,14 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 	public inline function next<R>(handler:(value:T) -> Task<R>):Task<R> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): handler(value);
-			case Error(error): Task.ofFailure(error);
+			case Error(error): Task.ofError(error);
 		});
 	}
 
-	public inline function recover(handler:(failure:Failure) -> Future<T>):Future<T> {
+	public inline function recover(handler:(error:Error) -> Future<T>):Future<T> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): Future.immediate(value);
-			case Error(failure): handler(failure);
+			case Error(error): handler(error);
 		});
 	}
 
@@ -116,7 +116,7 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
 		return new Task(activate -> {
 			promise.then(value -> activate(Ok(value)), e -> switch e is Exception {
-				case false: activate(Error(new Failure(InternalError, 'Unknown error: ${Std.string(e)}')));
+				case false: activate(Error(new Error(InternalError, 'Unknown error: ${Std.string(e)}')));
 				case true: activate(Error(e));
 			});
 		});
