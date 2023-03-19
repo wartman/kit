@@ -1,5 +1,3 @@
-import kit.Error;
-import haxe.Exception;
 import kit.Assert;
 import Helpers;
 
@@ -16,6 +14,7 @@ function main() {
 
 	// @todo: These should all be async?
 	testResult();
+	testMaybe();
 	testFuture();
 	testTask();
 	testNothing();
@@ -34,6 +33,14 @@ private function testResult() {
 	var result:Result<String, String> = Error('Failed');
 	result.map(value -> value + ' Ok').extract(Error(message));
 	assert(message == 'Failed');
+}
+
+private function testMaybe() {
+	var greeting:Maybe<String> = Some('hello');
+	assert(greeting.map(greeting -> '$greeting world').or('none') == 'hello world');
+
+	var noGreeting:Maybe<String> = None;
+	assert(noGreeting.map(greeting -> '$greeting world').or('none') == 'none');
 }
 
 // @todo: This test should return async.

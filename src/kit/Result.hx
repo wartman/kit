@@ -48,4 +48,11 @@ class ResultTools {
 			case Error(_): throw message;
 		};
 	}
+
+	public static function toMaybe<T, E>(result:Result<T, E>):Maybe<T> {
+		return switch result {
+			case Ok(value): Some(value);
+			case Error(_): None;
+		}
+	}
 }

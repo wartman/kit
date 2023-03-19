@@ -14,15 +14,18 @@ class MaybeTools {
 		}
 	}
 
-	public static function map<T, R>(maybe:Maybe<T>, transform:(value:T) -> Maybe<R>):Maybe<R> {
+	public static function map<T, R>(maybe:Maybe<T>, transform:(value:T) -> R):Maybe<R> {
 		return switch maybe {
-			case Some(v): transform(v);
+			case Some(value): Some(transform(value));
 			case None: None;
 		}
 	}
 
-	public static function flatMap<T, R>(maybe:Maybe<T>, transform:(value:Maybe<T>) -> Maybe<R>):Maybe<R> {
-		return transform(maybe);
+	public static function flatMap<T, R>(maybe:Maybe<T>, transform:(value:T) -> Maybe<R>):Maybe<R> {
+		return switch maybe {
+			case Some(value): transform(value);
+			case None: None;
+		}
 	}
 
 	public static function or<T>(maybe:Maybe<T>, value:Lazy<T>):T {
