@@ -1,7 +1,7 @@
 package kit;
 
 @:using(kit.Result.ResultTools)
-enum Result<T, E> {
+enum Result<T, E = Error> {
 	Ok(value:T);
 	Error(error:E);
 }

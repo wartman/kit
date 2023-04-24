@@ -80,8 +80,8 @@ private function testFuture() {
 
 private function testTask() {
 	var foo:Task<String> = 'foo';
-	foo.next(foo -> foo + 'bar').handle(outcome -> {
-		outcome.extract(Ok(value));
+	foo.next(foo -> foo + 'bar').handle(result -> {
+		result.extract(Ok(value));
 		assert(value == 'foobar');
 	});
 
@@ -89,9 +89,15 @@ private function testTask() {
 	foo.next(foo -> new Error(InternalError, 'expected')).recover(e -> {
 		assert(e.message == 'expected');
 		Task.resolve('foo');
-	}).handle(outcome -> {
-		outcome.extract(Ok(value));
+	}).handle(result -> {
+		result.extract(Ok(value));
 		assert(value == 'foo');
+	});
+
+	var customError:Task<String, String> = Task.reject('reject');
+	customError.next(foo -> 'foo').handle(result -> {
+		result.extract(Error(str));
+		assert(str == 'reject');
 	});
 }
 

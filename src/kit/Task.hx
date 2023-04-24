@@ -6,12 +6,12 @@ import kit.Cancellable;
 import kit.Nothing;
 
 @:forward(map, flatMap)
-abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T>> {
-	public static function nothing():Task<Nothing> {
+abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to Future<Result<T, E>> {
+	public static function nothing<E>():Task<Nothing, E> {
 		return new Task(activate -> activate(Ok(Nothing)));
 	}
 
-	public static function parallel<T>(...tasks:Task<T>):Task<Array<T>> {
+	public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
 		return new Future(activate -> {
 			var failed:Bool = false;
 			var result:Array<T> = [];
@@ -36,7 +36,7 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 		});
 	}
 
-	public static function sequence<T>(...tasks:Task<T>):Task<Array<T>> {
+	public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
 		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;
@@ -58,23 +58,23 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 		});
 	}
 
-	@:from public static function ofProduct<T>(result:Product<T>) {
+	@:from public static function ofResult<T, E>(result:Result<T, E>):Task<T, E> {
 		return new Task(activate -> activate(result));
 	}
 
-	@:from public static function ofFuture<T>(future:Future<T>):Task<T> {
+	@:from public static function ofFuture<T, E>(future:Future<T>):Task<T, E> {
 		return future.map(value -> Ok(value));
 	}
 
-	@:from public static function ofError<T>(error:Error):Task<T> {
-		return new Task(activate -> activate(Error(error)));
+	@:from public inline static function ofError<T>(error:Error):Task<T, Error> {
+		return reject(error);
 	}
 
-	@:from public static function resolve<T>(value:T) {
+	@:from public static function resolve<T, E>(value:T):Task<T, E> {
 		return new Task(activate -> activate(Ok(value)));
 	}
 
-	@:from public static function reject(e) {
+	public static function reject<T, E>(e:E):Task<T, E> {
 		return new Task(activate -> activate(Error(e)));
 	}
 
@@ -82,25 +82,25 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 		this = new Future(activator);
 	}
 
-	public inline function next<R>(handler:(value:T) -> Task<R>):Task<R> {
+	public inline function next<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): handler(value);
-			case Error(error): Task.ofError(error);
+			case Error(error): reject(error);
 		});
 	}
 
-	public inline function recover(handler:(error:Error) -> Future<T>):Future<T> {
+	public inline function recover(handler:(error:E) -> Future<T>):Future<T> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): Future.immediate(value);
 			case Error(error): handler(error);
 		});
 	}
 
-	public inline function handle(handler:(result:Product<T>) -> Void):Cancellable {
+	public inline function handle(handler:(result:Result<T, E>) -> Void):Cancellable {
 		return this.handle(handler);
 	}
 
-	@:to public inline function toFuture():Future<Product<T>> {
+	@:to public inline function toFuture():Future<Result<T, E>> {
 		return this;
 	}
 
@@ -108,8 +108,8 @@ abstract Task<T>(Future<Product<T>>) from Future<Product<T>> to Future<Product<T
 		return this;
 	}
 
-	@:to public inline function toNothing():Task<Nothing> {
-		return next(_ -> Nothing);
+	@:to public inline function toNothing():Task<Nothing, E> {
+		return next(_ -> nothing());
 	}
 
 	#if js

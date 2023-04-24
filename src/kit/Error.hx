@@ -42,7 +42,7 @@ abstract Error(ErrorObject) from ErrorObject {
 		this = {code: code, message: message};
 	}
 
-	@:to public function toProduct<T>():Product<T> {
+	@:to public function toResult<T>():Result<T> {
 		return Error(this);
 	}
 

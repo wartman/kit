@@ -1,10 +1,9 @@
 @:noUsing typedef Maybe<T> = kit.Maybe<T>;
-@:noUsing typedef Result<T, E> = kit.Result<T, E>;
-@:noUsing typedef Product<T> = kit.Product<T>;
+@:noUsing typedef Result<T, E = Error> = kit.Result<T, E>;
 @:noUsing typedef Lazy<T> = kit.Lazy<T>;
 @:noUsing typedef Cancellable = kit.Cancellable;
 @:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;
-@:noUsing typedef Task<T> = kit.Task<T>;
+@:noUsing typedef Task<T, E = Error> = kit.Task<T, E>;
 @:noUsing typedef Future<T> = kit.Future<T>;
 @:noUsing typedef Nothing = kit.Nothing;
 @:noUsing typedef Error = kit.Error;
