@@ -66,8 +66,8 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		return future.map(value -> Ok(value));
 	}
 
-	@:from public inline static function ofError<T>(error:Error):Task<T, Error> {
-		return reject(error);
+	@:from public static function ofError<T>(error:Error):Task<T, Error> {
+		return new Task(activate -> activate(Error(error)));
 	}
 
 	@:from public static function resolve<T, E>(value:T):Task<T, E> {
@@ -104,7 +104,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		return this;
 	}
 
-	@:to public inline function toDynamic():Task<Dynamic> {
+	@:to public inline function toDynamic():Task<Dynamic, E> {
 		return this;
 	}
 

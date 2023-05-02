@@ -99,6 +99,19 @@ private function testTask() {
 		result.extract(Error(str));
 		assert(str == 'reject');
 	});
+
+	var convertsResult:Task<String> = Ok('foo');
+	convertsResult.next(value -> Ok(value + 'bar')).handle(result -> {
+		result.extract(Ok(value));
+		assert(value == 'foobar');
+	});
+
+	var castsReturnObjectsIntoOk:Task<{foo:String}> = {foo: 'foo'};
+	castsReturnObjectsIntoOk.next(obj -> {bar: 'bar', foo: obj.foo}).handle(obj -> {
+		obj.extract(Ok({foo: foo, bar: bar}));
+		assert(foo == 'foo');
+		assert(bar == 'bar');
+	});
 }
 
 private function testNothing() {

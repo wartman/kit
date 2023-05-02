@@ -33,7 +33,7 @@ typedef ErrorObject = {
 // better way.
 
 @:forward(code, message)
-abstract Error(ErrorObject) from ErrorObject {
+abstract Error(ErrorObject) {
 	@:from public static function ofException(e:Exception) {
 		return new Error(InternalError, e.toString());
 	}
@@ -43,7 +43,7 @@ abstract Error(ErrorObject) from ErrorObject {
 	}
 
 	@:to public function toResult<T>():Result<T> {
-		return Error(this);
+		return Error(new Error(this.code, this.message));
 	}
 
 	@:to public function toString():String {
