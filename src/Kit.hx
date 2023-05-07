@@ -7,6 +7,7 @@
 @:noUsing typedef Future<T> = kit.Future<T>;
 @:noUsing typedef Nothing = kit.Nothing;
 @:noUsing typedef Error = kit.Error;
+@:noUsing typedef UniqueId = kit.UniqueId;
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end
