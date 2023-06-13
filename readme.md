@@ -39,7 +39,7 @@ something.extract(Some(foo));
 trace(foo); // => "foo"
 ```
 
-Note that an exception will be thrown if `extract` fails to match against the pattern you give it. You can avoid this problem by giving every extracted var a default value. For example, the following code will *not* throw an exception:
+Note that an exception will be thrown if `extract` fails to match against the pattern you give it. You can avoid this problem by giving every match a default value. For example, the following code will *not* throw an exception:
 
 ```haxe
 var something:kit.Maybe = None;
@@ -49,7 +49,7 @@ trace(foo); // => "default"
 
 Unless you're sure a pattern will always match, best practice is to provide defaults.
 
-You can alternatively use `target.ifExtract(pattern, body, ?otherwise)` for a little more safety. This will deconstruct an expression and passe it to the give `body`, but *only* if the target expression is matched.
+You can alternatively use `target.ifExtract(pattern, body, ?otherwise)` for a little more safety. This will deconstruct an expression and pass it to the given `body`, but *only* if the target expression is matched.
 
 If the target expression is not matched, you can optionally provide an `otherwise` expression that will be executed instead.
 
