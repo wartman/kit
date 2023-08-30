@@ -89,6 +89,17 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
+	public inline function mapError<R>(handler:(error:E) -> R):Task<T, R> {
+		return this.flatMap(result -> switch result {
+			case Ok(value): resolve(value);
+			case Error(e): reject(handler(e));
+		});
+	}
+
+	public inline function or(value:Lazy<T>):Future<T> {
+		return recover(_ -> Future.immediate(value.get()));
+	}
+
 	public inline function recover(handler:(error:E) -> Future<T>):Future<T> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): Future.immediate(value);
