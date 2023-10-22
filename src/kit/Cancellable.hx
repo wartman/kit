@@ -7,11 +7,11 @@ interface CancellableLink {
 
 @:forward
 abstract Cancellable(CancellableLink) from CancellableLink {
-	@:from public static function ofArray(items:Array<Cancellable>):Cancellable {
+	@:from @:noUsing public static function ofArray(items:Array<Cancellable>):Cancellable {
 		return new CancellableList(items);
 	}
 
-	@:from public static function ofFunction(link:() -> Void):Cancellable {
+	@:from @:noUsing public static function ofFunction(link:() -> Void):Cancellable {
 		return new SimpleCancelableLink(link);
 	}
 }

@@ -13,11 +13,11 @@ private enum FutureState<T> {
 }
 
 class Future<T> {
-	public inline static function immediate<T>(value:T) {
+	@:noUsing public inline static function immediate<T>(value:T) {
 		return new Future(activate -> activate(value));
 	}
 
-	public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
+	@:noUsing public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
 		return new Future(activate -> {
 			var result = [];
 			var count = 0;
@@ -31,7 +31,7 @@ class Future<T> {
 		});
 	}
 
-	public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
+	@:noUsing public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
 		return new Future(activate -> {
 			var result = [];
 			function poll(index:Int) {

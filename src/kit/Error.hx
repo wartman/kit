@@ -21,11 +21,21 @@ enum abstract ErrorCode(Int) from Int {
 	final LoopDetected = 508;
 }
 
-class Error extends Exception {
-	public final code:ErrorCode;
+@:forward
+@:forward.new
+abstract Error(ErrorObject) {
+	public var code(get, never):ErrorCode;
 
-	public function new(code, message) {
+	function get_code():ErrorCode {
+		return @:privateAccess this.errorCode;
+	}
+}
+
+private class ErrorObject extends Exception {
+	final errorCode:ErrorCode;
+
+	public function new(errorCode, message) {
 		super(message);
-		this.code = code;
+		this.errorCode = errorCode;
 	}
 }

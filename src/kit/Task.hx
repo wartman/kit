@@ -7,11 +7,11 @@ import kit.Nothing;
 
 @:forward(map, flatMap)
 abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to Future<Result<T, E>> {
-	public static function nothing<E>():Task<Nothing, E> {
+	@:noUsing public static function nothing<E>():Task<Nothing, E> {
 		return new Task(activate -> activate(Ok(Nothing)));
 	}
 
-	public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+	@:noUsing public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
 		return new Future(activate -> {
 			var failed:Bool = false;
 			var result:Array<T> = [];
@@ -36,7 +36,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
-	public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+	@:noUsing public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
 		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;
@@ -58,23 +58,23 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
-	@:from public static function ofResult<T, E>(result:Result<T, E>):Task<T, E> {
+	@:from @:noUsing public static function ofResult<T, E>(result:Result<T, E>):Task<T, E> {
 		return new Task(activate -> activate(result));
 	}
 
-	@:from public static function ofFuture<T, E>(future:Future<T>):Task<T, E> {
+	@:from @:noUsing public static function ofFuture<T, E>(future:Future<T>):Task<T, E> {
 		return future.map(value -> Ok(value));
 	}
 
-	@:from public static function ofError<T>(error:Error):Task<T, Error> {
+	@:from @:noUsing public static function ofError<T>(error:Error):Task<T, Error> {
 		return new Task(activate -> activate(Error(error)));
 	}
 
-	@:from public static function resolve<T, E>(value:T):Task<T, E> {
+	@:from @:noUsing public static function resolve<T, E>(value:T):Task<T, E> {
 		return new Task(activate -> activate(Ok(value)));
 	}
 
-	public static function reject<T, E>(e:E):Task<T, E> {
+	@:noUsing public static function reject<T, E>(e:E):Task<T, E> {
 		return new Task(activate -> activate(Error(e)));
 	}
 
@@ -124,7 +124,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	#if js
-	@:from public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
+	@:from @:noUsing public static function ofJsPromise<T>(promise:js.lib.Promise<T>):Task<T> {
 		return new Task(activate -> {
 			promise.then(value -> activate(Ok(value)), e -> switch e is Exception {
 				case false: activate(Error(new Error(InternalError, 'Unknown error: ${Std.string(e)}')));
