@@ -48,7 +48,7 @@ macro function extract(input, match) {
 }
 
 /**
-	Deconstructs an expression and passes it to the give `body`, but *only*
+	Deconstructs an expression and passes it to the given `body`, but *only*
 	if the expression is matched.
 
 	If the expression is not matched, you can optionally provide an `otherwise`

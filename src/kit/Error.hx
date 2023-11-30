@@ -23,7 +23,7 @@ enum abstract ErrorCode(Int) from Int {
 
 @:forward
 @:forward.new
-abstract Error(ErrorObject) {
+abstract Error(ErrorObject) to Exception {
 	public var code(get, never):ErrorCode;
 
 	function get_code():ErrorCode {
