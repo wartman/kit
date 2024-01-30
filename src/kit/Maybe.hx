@@ -1,8 +1,6 @@
 package kit;
 
-// @todo: With the new null stuff, this module is pretty
-// useless. Consider removing.
-
+@:deprecated('The new Null syntax covers most of what this does.')
 @:using(kit.Maybe.MaybeTools)
 enum Maybe<T> {
 	Some(value:T);

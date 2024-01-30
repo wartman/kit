@@ -1,5 +1,6 @@
 package kit;
 
+@:deprecated('Just use Null')
 function toMaybe<T>(value:Null<T>):Maybe<T> {
 	return switch value {
 		case null: None;

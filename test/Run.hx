@@ -1,3 +1,4 @@
+import haxe.ds.Option;
 import kit.Assert;
 import Helpers;
 
@@ -14,13 +15,11 @@ function main() {
 
 	// @todo: These should all be async?
 	testResult();
-	testMaybe();
 	testFuture();
 	testTask();
 	testNothing();
 	testExtractSugar();
 	testPipeSugar();
-	testNullSugar();
 	testEvent();
 	testLazy();
 }
@@ -35,15 +34,6 @@ private function testResult() {
 	assert(message == 'Failed');
 }
 
-private function testMaybe() {
-	var greeting:Maybe<String> = Some('hello');
-	assert(greeting.map(greeting -> '$greeting world').or('none') == 'hello world');
-
-	var noGreeting:Maybe<String> = None;
-	assert(noGreeting.map(greeting -> '$greeting world').or('none') == 'none');
-}
-
-// @todo: This test should return async.
 private function testFuture() {
 	var future = new Future(activate -> activate('pass'));
 	future.handle(value -> assert(value == 'pass'));
@@ -125,18 +115,18 @@ private function testExtractSugar() {
 	assert(a == 'a');
 	assert(b == 1);
 
-	var foo:Maybe<String> = Some('foo');
+	var foo:Option<String> = Some('foo');
 	foo.extract(Some(actual));
 	assert(actual == 'foo');
 
-	var foo:Maybe<String> = None;
+	var foo:Option<String> = None;
 	foo.extract(Some(actual = 'foo'));
 	assert(actual == 'foo');
 
-	var foo:Maybe<String> = Some('foo');
+	var foo:Option<String> = Some('foo');
 	foo.ifExtract(Some(value), assert(value == 'foo'));
 
-	var foo:Maybe<String> = None;
+	var foo:Option<String> = None;
 	foo.ifExtract(Some(value), {
 		assert(value == 'foo');
 	}, {
@@ -144,7 +134,7 @@ private function testExtractSugar() {
 	});
 
 	// Make sure nothing leaks into the parent scope:
-	var foo:Maybe<String> = Some('foo');
+	var foo:Option<String> = Some('foo');
 	var value:String = 'bar';
 	foo.ifExtract(Some(value), assert(value == 'foo'));
 	assert(value == 'bar');
@@ -159,12 +149,6 @@ private function testPipeSugar() {
 	// Can use lambdas/functions with a single arg:
 	var result = 'foo'.pipe(add(_, 'bar'), str -> str + 'ok', add('ok', _));
 	assert(result == 'okfoobarok');
-}
-
-private function testNullSugar() {
-	var foo:Null<String> = 'foo';
-	foo.toMaybe().extract(Some(value));
-	assert(value == 'foo');
 }
 
 private function testEvent() {

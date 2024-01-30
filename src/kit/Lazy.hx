@@ -1,14 +1,12 @@
 package kit;
 
-import kit.Maybe;
-
 @:forward(get)
 abstract Lazy<T>(LazyObject<T>) {
-	@:from public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
+	@:from @:noUsing public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
 		return new Lazy(get);
 	}
 
-	@:from public inline static function ofValue<T>(value:T) {
+	@:from @:noUsing public inline static function ofValue<T>(value:T) {
 		return new Lazy(() -> value);
 	}
 
@@ -23,7 +21,7 @@ typedef LazyObject<T> = {
 
 class SimpleLazyObject<T> {
 	final resolve:() -> T;
-	var value:Maybe<T> = None;
+	var value:Result<T, Nothing> = Error(Nothing);
 
 	public function new(resolve) {
 		this.resolve = resolve;
@@ -31,11 +29,12 @@ class SimpleLazyObject<T> {
 
 	public function get():T {
 		return switch value {
-			case Some(value):
+			case Ok(value):
 				value;
-			case None:
-				value = Some(resolve());
-				get();
+			case Error(_):
+				var resolved = resolve();
+				value = Ok(resolved);
+				resolved;
 		}
 	}
 }
