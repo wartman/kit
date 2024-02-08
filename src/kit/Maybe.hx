@@ -1,8 +1,5 @@
 package kit;
 
-// @todo: With the new null stuff, this module is pretty
-// useless. Consider removing.
-
 @:using(kit.Maybe.MaybeTools)
 enum Maybe<T> {
 	Some(value:T);

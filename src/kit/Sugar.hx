@@ -1,9 +1,19 @@
 package kit;
 
+import haxe.Exception;
+
 function toMaybe<T>(value:Null<T>):Maybe<T> {
 	return switch value {
 		case null: None;
 		case value: Some(value);
+	}
+}
+
+function getResult<T>(handler:() -> T):Result<T, Exception> {
+	return try {
+		Ok(handler());
+	} catch (e) {
+		Error(e);
 	}
 }
 

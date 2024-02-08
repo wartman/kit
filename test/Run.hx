@@ -35,6 +35,16 @@ private function testResult() {
 	assert(message == 'Failed');
 }
 
+private function testGetResult() {
+	function foo():String {
+		throw 'Expected';
+	}
+	switch foo.getResult() {
+		case Ok(_): throw 'Failed';
+		case Error(e): assert(e.message == 'Expected');
+	}
+}
+
 private function testMaybe() {
 	var greeting:Maybe<String> = Some('hello');
 	assert(greeting.map(greeting -> '$greeting world').or('none') == 'hello world');

@@ -1,23 +1,27 @@
-@:noUsing typedef Maybe<T> = kit.Maybe<T>;
-@:noUsing typedef Result<T, E = Error> = kit.Result<T, E>;
-@:noUsing typedef Lazy<T> = kit.Lazy<T>;
-@:noUsing typedef Cancellable = kit.Cancellable;
-@:noUsing typedef CancellableLink = kit.Cancellable.CancellableLink;
-@:noUsing typedef Task<T, E = Error> = kit.Task<T, E>;
-@:noUsing typedef Future<T> = kit.Future<T>;
-@:noUsing typedef Nothing = kit.Nothing;
-@:noUsing typedef Error = kit.Error;
-@:noUsing typedef UniqueId = kit.UniqueId;
+typedef Maybe<T> = kit.Maybe<T>;
+typedef Result<T, E = Error> = kit.Result<T, E>;
+typedef Lazy<T> = kit.Lazy<T>;
+typedef Cancellable = kit.Cancellable;
+typedef CancellableLink = kit.Cancellable.CancellableLink;
+typedef Task<T, E = Error> = kit.Task<T, E>;
+typedef Future<T> = kit.Future<T>;
+typedef Nothing = kit.Nothing;
+typedef Error = kit.Error;
+typedef UniqueId = kit.UniqueId;
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end
-@:noUsing class Event<Rest> {}
+class Event<Rest> {}
 
 /**
 	Convert any nullable value into a kit.Maybe.
 **/
 inline extern function toMaybe<T>(value:Null<T>):Maybe<T> {
 	return kit.Sugar.toMaybe(value);
+}
+
+inline extern function getResult<T>(handler):Result<T, haxe.Exception> {
+	return kit.Sugar.getResult(handler);
 }
 
 /**

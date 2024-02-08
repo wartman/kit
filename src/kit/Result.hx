@@ -7,10 +7,10 @@ enum Result<T, E = Error> {
 }
 
 class ResultTools {
-	public static function unwrap<T, E>(result:Result<T, E>):T {
+	public static function unwrap<T, E>(result:Result<T, E>):Null<T> {
 		return switch result {
 			case Ok(value): value;
-			case Error(error): throw error;
+			case Error(_): null;
 		}
 	}
 
@@ -43,8 +43,9 @@ class ResultTools {
 	}
 
 	public static function orThrow<T, E>(result:Result<T, E>, ?message:String):T {
-		return message == null ? unwrap(result) : switch result {
+		return switch result {
 			case Ok(value): value;
+			case Error(error) if (message == null): throw error;
 			case Error(_): throw message;
 		};
 	}
