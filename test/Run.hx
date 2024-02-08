@@ -14,6 +14,7 @@ function main() {
 
 	// @todo: These should all be async?
 	testResult();
+	testGetResult();
 	testMaybe();
 	testFuture();
 	testTask();
