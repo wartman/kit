@@ -212,5 +212,5 @@ private function testStream() {
 		case Ok(_): assert(buf.toString() == 'hello world');
 		case Error(e): throw e;
 	});
-	stream.start();
+	stream.collect();
 }

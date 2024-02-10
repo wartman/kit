@@ -1,11 +1,13 @@
 package kit;
 
+// @todo: Handle pausing and resuming
 enum Message<T, E = Error> {
 	Next(value:T);
 	Finish;
 	Fail(error:E);
 }
 
+// @todo: Handle pausing and resuming
 typedef Writeable<T, E = Error> = {
 	public function write(item:T):Void;
 	public function fail(error:E):Void;
@@ -66,7 +68,7 @@ class Generator<T, E = Error> extends StreamObject<T, E> {
 		this.generator = generator;
 	}
 
-	public function start() {
+	public function collect() {
 		generator(send);
 	}
 }
@@ -112,7 +114,7 @@ class StreamObject<T, E = Error> {
 		}
 	}
 
-	public inline function each(handler:(item:T) -> Void):Task<Nothing, E> {
+	public function each(handler:(item:T) -> Void):Task<Nothing, E> {
 		return new Task<Nothing, E>(activate -> pipe({
 			write: handler,
 			fail: e -> activate(Error(e)),
