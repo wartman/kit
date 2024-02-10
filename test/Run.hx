@@ -202,15 +202,19 @@ private function testLazy() {
 }
 
 private function testStream() {
-	var stream = Stream.generate(yield -> {
+	var stream = new Stream(yield -> {
 		yield(Next('hello '));
 		yield(Next('world'));
 		yield(Finish);
 	});
 	var buf = new StringBuf();
-	stream.each(item -> buf.add(item)).handle(result -> switch result {
-		case Ok(_): assert(buf.toString() == 'hello world');
-		case Error(e): throw e;
+	stream.pipe({
+		write: item -> buf.add(item),
+		end: () -> {},
+		fail: _ -> {}
 	});
-	stream.collect();
+	stream.handle(result -> switch result {
+		case Ok(_): assert(buf.toString() == 'hello world');
+		case Error(error): throw error;
+	});
 }
