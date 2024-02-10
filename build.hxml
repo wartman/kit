@@ -5,7 +5,7 @@
 -D js-es=6
 # -D analyzer-optimize
 
-# -lib hxnodejs
+-lib hxnodejs
 
 -main Run
 

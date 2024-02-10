@@ -111,6 +111,11 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		return this.handle(handler);
 	}
 
+	public function eager():Task<T, E> {
+		this.eager();
+		return abstract;
+	}
+
 	@:to public inline function toFuture():Future<Result<T, E>> {
 		return this;
 	}

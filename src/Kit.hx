@@ -8,6 +8,7 @@ typedef Future<T> = kit.Future<T>;
 typedef Nothing = kit.Nothing;
 typedef Error = kit.Error;
 typedef UniqueId = kit.UniqueId;
+typedef Stream<T, E = Error> = kit.Stream<T, E>;
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end

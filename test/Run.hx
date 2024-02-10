@@ -24,6 +24,7 @@ function main() {
 	testNullSugar();
 	testEvent();
 	testLazy();
+	testStream();
 }
 
 private function testResult() {
@@ -198,4 +199,18 @@ private function testLazy() {
 	assert(foo.get() == 'foo1');
 	assert(foo.get() == 'foo1');
 	assert(foo.get() == 'foo1');
+}
+
+private function testStream() {
+	var stream = Stream.generate(yield -> {
+		yield(Next('hello '));
+		yield(Next('world'));
+		yield(Finish);
+	});
+	var buf = new StringBuf();
+	stream.each(item -> buf.add(item)).handle(result -> switch result {
+		case Ok(_): assert(buf.toString() == 'hello world');
+		case Error(e): throw e;
+	});
+	stream.start();
 }
