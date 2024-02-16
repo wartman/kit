@@ -1,6 +1,5 @@
 package kit;
 
-import kit.Cancellable;
 import haxe.Exception;
 
 typedef FutureActivator<T> = (activate:(value:T) -> Void) -> Void;
