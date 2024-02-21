@@ -4,11 +4,15 @@ import kit.Maybe;
 
 @:forward(get)
 abstract Lazy<T>(LazyObject<T>) {
-	@:from public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
+	@:from
+	@:noUsing
+	public inline static function ofFunction<T>(get:() -> T):Lazy<T> {
 		return new Lazy(get);
 	}
 
-	@:from public inline static function ofValue<T>(value:T) {
+	@:from
+	@:noUsing
+	public inline static function ofValue<T>(value:T) {
 		return new Lazy(() -> value);
 	}
 

@@ -202,60 +202,23 @@ private function testLazy() {
 }
 
 private function testStream() {
-	var stream = Stream.generator(yield -> {
-		yield(Next('hello ', Stream.generator(yield -> {
-			yield(Next('world', Stream.empty()));
-		})));
-	});
-	var buf = new StringBuf();
+	var stream = Stream.value('hello').append(Stream.value('world'));
 
-	stream.each(item -> buf.add(item)).handle(result -> switch result {
-		case Depleted:
-			trace(buf.toString());
-			assert(buf.toString() == 'hello world');
+	stream.collect().handle(result -> switch result {
+		case Ok(values):
+			var message = values.join(' ');
+			trace(message);
+			assert(message == 'hello world');
 		default: throw 'Unexpected conclusion';
 	});
-	stream.reduce('', (accumulator, item) -> accumulator + item).handle(result -> switch result {
-		case Reduced(value):
-			trace(value);
-			assert(value == 'hello world');
-		case Errored(error): throw error;
-		default: throw 'Unexpected reduction';
-	});
-	stream.append(Stream.value(' and stuff')).collect().handle(result -> switch result {
-		case Reduced(items):
-			var message = items.join('');
-			trace(message);
-			assert(message == 'hello world and stuff');
-		case Errored(error): throw error;
-		default: throw 'Unexpected reduction';
-	});
-	stream.append(Stream.value('place'))
-		.map(str -> StringTools.trim(str) + '/')
-		.append(Stream.value('done'))
-		.collect()
+
+	stream.map(value -> value.toUpperCase())
+		.append(Stream.value('and stuff'))
+		.reduce('', (accumulator, item) -> [accumulator, item].filter(t -> t.length > 0).join(' '))
 		.handle(result -> switch result {
-			case Reduced(items):
-				var message = items.join('');
-				trace(message);
-				assert(message == 'hello/world/place/done');
-			case Errored(error): throw error;
-			default: throw 'Unexpected reduction';
+			case Ok(value):
+				trace(value);
+				assert(value == 'HELLO WORLD and stuff');
+			default: throw 'Unexpected conclusion';
 		});
-
-	var eventStream = new Event<kit.Stream.Yield<String>>();
-	var ev = Stream.event(eventStream);
-
-	ev.collect().handle(result -> switch result {
-		case Reduced(value):
-			var message = value.join('.');
-			trace(message);
-			assert(message == 'foo.bar');
-		case Errored(error): throw error;
-		default: throw 'Unexpected reduction';
-	});
-
-	eventStream.dispatch(Data('foo'));
-	eventStream.dispatch(Data('bar'));
-	eventStream.dispatch(Done);
 }
