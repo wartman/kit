@@ -2,6 +2,8 @@ package kit;
 
 enum StreamResult<T, E> {
 	Streaming(data:T, next:Stream<T, E>);
+	Paused(next:Stream<T, E>);
+	// @todo: add clogged?
 	Depleted;
 	Errored(error:E);
 }
@@ -47,6 +49,8 @@ abstract class StreamObject<T, E> {
 			each(item -> accumulator = reducer(accumulator, item)).handle(result -> switch result {
 				case Streaming(data, next):
 					next.reduce(reducer(accumulator, data), reducer).handle(activate);
+				case Paused(_):
+					throw 'assert';
 				case Depleted:
 					activate(Ok(accumulator));
 				case Errored(error):
@@ -201,6 +205,8 @@ class TransformStream<T, R, E> extends StreamObject<R, E> {
 					case Error(error):
 						Future.immediate(Errored(error));
 				});
+			case Paused(next):
+				Future.immediate(Paused(new TransformStream(next, transform)));
 			case Depleted:
 				Future.immediate(Depleted);
 			case Errored(error):

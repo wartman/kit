@@ -221,4 +221,12 @@ private function testStream() {
 				assert(value == 'HELLO WORLD and stuff');
 			default: throw 'Unexpected conclusion';
 		});
+
+	var buf = new StringBuf();
+	stream.each(item -> buf.add(item)).handle(result -> switch result {
+		case Depleted:
+			trace(buf.toString());
+			assert(buf.toString() == 'helloworld');
+		default: throw 'Unexpected conclusion';
+	});
 }
