@@ -21,6 +21,63 @@ abstract Stream<T, E = Error>(StreamObject<T, E>) from StreamObject<T, E> {
 	public static function event<T, E>(?event:Event<Yield<T, E>>):Stream<T, E> {
 		return new EventStream(event ?? new Event<Yield<T, E>>());
 	}
+
+	@:noUsing
+	public static function empty<T, E>():Stream<T, E> {
+		return new EmptyStream();
+	}
+
+	@:noUsing
+	public static function generator<T, E>(handler:Future.FutureActivator<StreamResult<T, E>>):Stream<T, E> {
+		return new GeneratorStream(new Future(handler));
+	}
+
+	#if nodejs
+	@:noUsing
+	@:from
+	public static function ofNodeReadable<T>(readable:js.node.stream.Readable.IReadable):Stream<T, Error> {
+		var event = new Event<Yield<T, Error>>();
+		var stream = Stream.event(event);
+
+		readable.once('end', () -> event.dispatch(End));
+		readable.once('error', (e:{code:String, message:String}) -> {
+			event.dispatch(Error(new Error(InternalError, '${e.code}: Stream failed with ${e.message}')));
+		});
+		readable.on('data', data -> event.dispatch(Data(data)));
+
+		return stream;
+	}
+	#end
+
+	@:from
+	@:noUsing
+	public inline static function ofArray<T, E>(arr:Array<T>):Stream<T, E> {
+		return ofIterator(arr.iterator());
+	}
+
+	@:from
+	@:noUsing
+	public static function ofIterator<T, E>(iterator:Iterator<T>):Stream<T, E> {
+		function next(step:(step:StreamResult<T, E>) -> Void) {
+			step(if (iterator.hasNext()) {
+				Streaming(iterator.next(), generator(next));
+			} else {
+				Depleted;
+			});
+		}
+		return generator(next);
+	}
+
+	@:from
+	@:noUsing
+	public static function ofTask<T, E>(task:Task<T, E>):Stream<T, E> {
+		return generator(yield -> {
+			task.handle(result -> switch result {
+				case Ok(value): yield(Streaming(value, empty()));
+				case Error(error): yield(Errored(error));
+			});
+		});
+	}
 }
 
 abstract class StreamObject<T, E> {
