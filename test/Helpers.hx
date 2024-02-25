@@ -4,5 +4,6 @@ function print(message:String) {
 	#else
 	Sys.println(message);
 	#end
+	return message;
 }
 // @todo: Other simple test stuff

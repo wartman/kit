@@ -1,6 +1,6 @@
 import kit.Assert;
-import Helpers;
 
+using Helpers;
 using Kit;
 
 #if !debug
@@ -10,7 +10,7 @@ using Kit;
 // function. We may move to something more robust later, but I want
 // no dependencies in the core Kit package if possible.
 function main() {
-	print('Starting tests...');
+	'Starting tests...'.print();
 
 	// @todo: These should all be async?
 	testResult();
@@ -217,16 +217,14 @@ private function testStream() {
 		.reduce('', (accumulator, item) -> [accumulator, item].filter(t -> t.length > 0).join(' '))
 		.handle(result -> switch result {
 			case Ok(value):
-				trace(value);
-				assert(value == 'HELLO WORLD and stuff');
+				assert(value.print() == 'HELLO WORLD and stuff');
 			default: throw 'Unexpected conclusion';
 		});
 
 	var buf = new StringBuf();
 	stream.each(item -> buf.add(item)).handle(result -> switch result {
 		case Depleted:
-			trace(buf.toString());
-			assert(buf.toString() == 'helloworld');
+			assert(buf.toString().print() == 'helloworld');
 		default: throw 'Unexpected conclusion';
 	});
 }

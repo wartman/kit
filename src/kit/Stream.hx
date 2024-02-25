@@ -245,8 +245,8 @@ class CompoundStream<T, E> extends StreamObject<T, E> {
 }
 
 class TransformStream<T, R, E> extends StreamObject<R, E> {
-	final transform:(value:T) -> Task<R, E>;
 	final source:Stream<T, E>;
+	final transform:(value:T) -> Task<R, E>;
 
 	public function new(source, transform) {
 		this.transform = transform;
