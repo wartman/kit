@@ -41,4 +41,26 @@ class MaybeTools {
 			case None: throw message == null ? 'No value exists' : message;
 		}
 	}
+
+	public static function inspect<T>(maybe:Maybe<T>, inspector:(value:T) -> Void) {
+		switch maybe {
+			case Some(value): inspector(value);
+			case None:
+		}
+		return maybe;
+	}
+
+	public static function isSome<T>(maybe:Maybe<T>):Bool {
+		return switch maybe {
+			case Some(_): true;
+			case None: false;
+		}
+	}
+
+	public static function isNone<T>(maybe:Maybe<T>):Bool {
+		return switch maybe {
+			case Some(_): false;
+			case None: true;
+		}
+	}
 }

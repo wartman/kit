@@ -7,6 +7,20 @@ enum Result<T, E = Error> {
 }
 
 class ResultTools {
+	public static function isOk<T, E>(result:Result<T, E>):Bool {
+		return switch result {
+			case Ok(_): true;
+			case Error(_): false;
+		}
+	}
+
+	public static function isError<T, E>(result:Result<T, E>):Bool {
+		return switch result {
+			case Ok(_): false;
+			case Error(_): true;
+		}
+	}
+
 	public static function unwrap<T, E>(result:Result<T, E>):Null<T> {
 		return switch result {
 			case Ok(value): value;
@@ -33,6 +47,22 @@ class ResultTools {
 			case Ok(value): Ok(value);
 			case Error(error): Error(transform(error));
 		}
+	}
+
+	public static function inspect<T, E>(result:Result<T, E>, inspector:(value:T) -> Void) {
+		switch result {
+			case Ok(value): inspector(value);
+			default:
+		}
+		return result;
+	}
+
+	public static function inspectError<T, E>(result:Result<T, E>, inspector:(error:E) -> Void) {
+		switch result {
+			case Error(error): inspector(error);
+			default:
+		}
+		return result;
 	}
 
 	public static function or<T, E>(result:Result<T, E>, value:Lazy<T>):T {

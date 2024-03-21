@@ -31,10 +31,12 @@ private function testResult() {
 	var result:Result<String, String> = Ok('Ok');
 	result.map(value -> value + ' Ok').extract(Ok(value = 'Failed'));
 	assert(value == 'Ok Ok');
+	assert(result.isOk());
 
 	var result:Result<String, String> = Error('Failed');
 	result.map(value -> value + ' Ok').extract(Error(message));
 	assert(message == 'Failed');
+	assert(result.isError());
 }
 
 private function testGetResult() {
