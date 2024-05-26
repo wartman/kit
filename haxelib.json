@@ -6,6 +6,6 @@
   "dependencies": {},
   "url": "https://github.com/wartman/kit",
   "license": "MIT",
-  "releasenote": "Streams",
-  "version": "0.1.0"
+  "releasenote": "Added inspect method to Task and Future",
+  "version": "0.1.1"
 }

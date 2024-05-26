@@ -50,6 +50,13 @@ class Future<T> {
 		state = Inactive(activator, []);
 	}
 
+	public inline function inspect(handler:(value:T) -> Void):Future<T> {
+		return map(value -> {
+			handler(value);
+			value;
+		});
+	}
+
 	public function map<R>(transform:(value:T) -> R):Future<R> {
 		return new Future(activate -> handle(value -> activate(transform(value))));
 	}

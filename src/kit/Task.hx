@@ -82,6 +82,13 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		this = new Future(activator);
 	}
 
+	public inline function inspect(handler:(value:T) -> Void):Task<T, E> {
+		return next(value -> {
+			handler(value);
+			value;
+		});
+	}
+
 	public inline function next<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): handler(value);
