@@ -3,6 +3,8 @@ Kit
 
 Basic stuff I often find myself using.
 
+
+
 Getting Started
 ---------------
 
@@ -84,9 +86,3 @@ trace(noGreeting.map(greeting -> greeting + ' world').or('goodbye world'));
 ```
 
 > Todo: Cover the rest.
-
-Principals
-----------
-
-Kit is somewhat similar to Tink or Thx, but with one additional goal: the only package other Kit modules are allowed to rely on is this root kit module (and on `kit.spec` for testing).
-

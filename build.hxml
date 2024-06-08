@@ -5,4 +5,8 @@
 -D js-es=6
 # -D analyzer-optimize
 
---run Run
+# --run Run
+--main Run
+-js dist/test.js
+
+-cmd node dist/test
