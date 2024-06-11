@@ -19,7 +19,7 @@ function main() {
 	runner.add(spec.ResultSuite);
 	runner.add(spec.MaybeSuite);
 	runner.add(spec.MacroSuite);
-	runner.add(spec.HttpSuite);
+	runner.add(spec.OrSuite);
 
 	runner.run();
 }

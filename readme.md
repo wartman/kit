@@ -1,12 +1,8 @@
-Kit
-===
+# Kit
 
 Basic stuff I often find myself using.
 
-
-
-Getting Started
----------------
+## Getting Started
 
 Install Kit using [Lix](https://github.com/lix-pm/lix.client) or Haxelib (only available from github for now).
 
@@ -24,8 +20,7 @@ Then just include `-lib kit` in your HXML.
 
 You can import nearly all of Kit's modules at once with `using Kit`, which is generally the recommended way to do things. To make it extremely convenient, consider adding `using Kit` to your [`import.hx` file](https://haxe.org/manual/type-system-import-defaults.html).
 
-Documentation
--------------
+## Documentation
 
 > Warning: this documentation is extremely incomplete.
 
@@ -85,4 +80,23 @@ var noGreeting:Maybe<String> = None;
 trace(noGreeting.map(greeting -> greeting + ' world').or('goodbye world'));
 ```
 
-> Todo: Cover the rest.
+### Result
+
+`kit.Result` represents some result that might fail.
+
+```haxe
+function makeFoo(str:String):Result<String, String> {
+  return switch str {
+    case 'foo': Error('Already foo!');
+    default: Ok('foo');
+  }
+}
+```
+
+### Spec
+
+> Todo
+
+### Macro
+
+> Todo

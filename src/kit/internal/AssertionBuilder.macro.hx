@@ -1,6 +1,5 @@
 package kit.internal;
 
-import haxe.macro.Context;
 import haxe.macro.Expr;
 
 using haxe.macro.ExprTools;

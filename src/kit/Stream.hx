@@ -8,7 +8,7 @@ enum StreamResult<T, E> {
 	Errored(error:E);
 }
 
-typedef Handler<T> = (value:T) -> Void;
+typedef StreamHandler<T> = (value:T) -> Void;
 
 @:forward
 abstract Stream<T, E = Error>(StreamObject<T, E>) from StreamObject<T, E> {
@@ -34,8 +34,7 @@ abstract Stream<T, E = Error>(StreamObject<T, E>) from StreamObject<T, E> {
 
 	#if nodejs
 	@:noUsing
-	@:from
-	public static function ofNodeReadable<T>(readable:js.node.stream.Readable.IReadable):Stream<T, Error> {
+	public static function ofNodeReadable<T>(readable:js.node.stream.Readable.IReadable, ?parse:(data:Dynamic) -> T):Stream<T, Error> {
 		var event = new Event<Yield<T, Error>>();
 		var stream = Stream.event(event);
 
@@ -43,7 +42,12 @@ abstract Stream<T, E = Error>(StreamObject<T, E>) from StreamObject<T, E> {
 		readable.once('error', (e:{code:String, message:String}) -> {
 			event.dispatch(Error(new Error(InternalError, '${e.code}: Stream failed with ${e.message}')));
 		});
-		readable.on('data', data -> event.dispatch(Data(data)));
+
+		if (parse == null) {
+			readable.on('data', data -> event.dispatch(Data(data)));
+		} else {
+			readable.on('data', data -> event.dispatch(Data(parse(data))));
+		}
 
 		return stream;
 	}
@@ -122,7 +126,7 @@ abstract class StreamObject<T, E> {
 
 	abstract public function next():Future<StreamResult<T, E>>;
 
-	abstract public function each(handler:Handler<T>):Future<StreamResult<T, E>>;
+	abstract public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>>;
 }
 
 enum Yield<T, E> {
@@ -152,7 +156,7 @@ class EventStream<T, E> extends StreamObject<T, E> {
 		return stream.next();
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		return stream.each(handler);
 	}
 }
@@ -164,7 +168,7 @@ class EmptyStream<T, E> extends StreamObject<T, E> {
 		return Future.immediate(Depleted);
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		return Future.immediate(Depleted);
 	}
 }
@@ -180,7 +184,7 @@ class ErrorStream<T, E> extends StreamObject<T, E> {
 		return Future.immediate(Errored(error));
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		return Future.immediate(Errored(error));
 	}
 }
@@ -196,7 +200,7 @@ class ValueStream<T, E> extends StreamObject<T, E> {
 		return Future.immediate(Streaming(value, new EmptyStream()));
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		handler(value);
 		return Future.immediate(Depleted);
 	}
@@ -228,7 +232,7 @@ class CompoundStream<T, E> extends StreamObject<T, E> {
 		});
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		if (sources.length == 0) return Future.immediate(Depleted);
 
 		return sources[0].each(handler).flatMap(result -> switch result {
@@ -271,7 +275,7 @@ class TransformStream<T, R, E> extends StreamObject<R, E> {
 		});
 	}
 
-	public function each(handler:Handler<R>):Future<StreamResult<R, E>> {
+	public function each(handler:StreamHandler<R>):Future<StreamResult<R, E>> {
 		return new Future(activate -> {
 			next().handle(result -> switch result {
 				case Streaming(data, next):
@@ -295,7 +299,7 @@ class GeneratorStream<T, E> extends StreamObject<T, E> {
 		return step;
 	}
 
-	public function each(handler:Handler<T>):Future<StreamResult<T, E>> {
+	public function each(handler:StreamHandler<T>):Future<StreamResult<T, E>> {
 		return new Future(activate -> {
 			step.handle(result -> switch result {
 				case Streaming(data, next):

@@ -1,6 +1,8 @@
 -cp src
 -cp test
 
+-lib hxnodejs
+
 -D debug
 -D js-es=6
 # -D analyzer-optimize

@@ -5,6 +5,7 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 
 using haxe.macro.Tools;
+using kit.macro.Tools;
 
 function build() {
 	return switch Context.getLocalType() {
@@ -21,13 +22,14 @@ private function buildEvent(params:Array<Type>):ComplexType {
 	var paramLength = params.length;
 	var pack = ['kit'];
 	var name = 'Event_${paramLength}';
-	var type = TPath({
+	var path:TypePath = {
 		pack: pack,
 		name: name,
 		params: [for (t in params) TPType(t.toComplexType())]
-	});
+	};
+	var type = TPath(path);
 
-	if (typeExists('kit.${name}')) {
+	if (path.typePathExists()) {
 		return type;
 	}
 
@@ -80,12 +82,4 @@ private function buildEvent(params:Array<Type>):ComplexType {
 	});
 
 	return type;
-}
-
-private function typeExists(name:String) {
-	try {
-		return Context.getType(name) != null;
-	} catch (e:String) {
-		return false;
-	}
 }

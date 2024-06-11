@@ -10,13 +10,15 @@ typedef Error = kit.Error;
 typedef UniqueId = kit.UniqueId;
 #if !macro
 typedef Stream<T, E = Error> = kit.Stream<T, E>;
-
-// typedef StreamMessage<T, E> = kit.Stream.StreamMessage<T, E>;
 #end
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end
 class Event<Rest> {}
+#if !macro
+@:genericBuild(kit.internal.OrBuilder.build())
+#end
+interface Or<Rest> {}
 
 /**
 	Convert any nullable value into a kit.Maybe.

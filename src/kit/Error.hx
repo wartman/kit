@@ -21,6 +21,10 @@ enum abstract ErrorCode(Int) from Int {
 	final LoopDetected = 508;
 }
 
+// @todo: Increasingly unsure about this class. Probably
+// replace it with the `Or<...>` type and handle errors
+// sorta like Roc does.
+
 @:forward
 @:forward.new
 abstract Error(ErrorObject) to Exception {
