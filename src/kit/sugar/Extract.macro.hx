@@ -4,6 +4,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 
 using haxe.macro.Tools;
+using kit.macro.Tools;
 
 private typedef Assignment = {
 	final name:String;
@@ -19,6 +20,26 @@ private typedef ExtractedExpr = {
 
 function createExtractExpr(input:Expr, match:Expr) {
 	var pos = Context.currentPos();
+
+	switch match.expr {
+		case EIf(match, body, otherwise):
+			var extracted = extractAssignments(match);
+			if (otherwise == null) otherwise = macro null;
+
+			return macro {
+				var __target = $input;
+				switch __target {
+					case $match:
+						@:mergeBlock $b{extracted.decls};
+						$b{extracted.assignments};
+						${body};
+					default:
+						${otherwise};
+				}
+			}
+		default:
+	}
+
 	var extracted = extractAssignments(match);
 
 	var ifNoMatch:Expr = if (extracted.hasFallback)
@@ -39,7 +60,10 @@ function createExtractExpr(input:Expr, match:Expr) {
 	}
 }
 
+@:deprecated
 function createIfExtractExpr(input:Expr, match:Expr, body:Expr, ?otherwise:Expr) {
+	Context.warning('ifExtract is deprecated. Use `extract` with an if expression instead', input.pos);
+
 	var pos = Context.currentPos();
 	var extracted = extractAssignments(match);
 

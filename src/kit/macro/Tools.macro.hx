@@ -70,7 +70,7 @@ function typePathToString(path:TypePath) {
 	return typePathToArray(path).join('.');
 }
 
-function parseAsType(name:String):ComplexType {
+function parseAsComplexType(name:String):ComplexType {
 	return switch Context.parse('(null:${name})', Context.currentPos()) {
 		case macro(null : $type): type;
 		default: null;
@@ -81,10 +81,11 @@ function resolveComplexType(expr:Expr):ComplexType {
 	return switch expr.expr {
 		case ECall(e, params):
 			var tParams = params.map(param -> resolveComplexType(param).toString()).join(',');
-			parseAsType(resolveComplexType(e).toString() + '<' + tParams + '>');
-		default: switch Context.typeof(expr) {
+			parseAsComplexType(resolveComplexType(e).toString() + '<' + tParams + '>');
+		default:
+			switch Context.typeof(expr) {
 				case TType(_, _):
-					parseAsType(expr.toString());
+					parseAsComplexType(expr.toString());
 				default:
 					Context.error('Invalid expression', expr.pos);
 					null;
@@ -95,10 +96,12 @@ function resolveComplexType(expr:Expr):ComplexType {
 function stringifyTypeForClassName(type:haxe.macro.Type):String {
 	return switch type {
 		// Attempt to use human-readable names if possible
-		case TInst(t, []):
+		case TInst(_, []) | TEnum(_, []) | TAbstract(_, []):
 			type.toString().replace('.', '_');
-		case TInst(t, params):
-			t.toString().replace('.', '_') + '__' + params.map(stringifyTypeForClassName).join('_');
+		case TInst(_.toString() => name, params) | TAbstract(_.toString() => name, params) | TEnum(_.toString() => name, params):
+			name.replace('.', '_') + '__' + params.map(stringifyTypeForClassName).join('__');
+		case TLazy(f):
+			stringifyTypeForClassName(f());
 		default:
 			// Fallback to using a hash.
 			type.toString().hash();

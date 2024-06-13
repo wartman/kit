@@ -24,7 +24,7 @@ private function buildOr(params:Array<Type>) {
 
 	var path:TypePath = {
 		pack: ['kit'],
-		name: 'Or_${names.join('_')}'
+		name: 'Or__${names.join('__')}'
 	};
 	var ct:ComplexType = TPath(path);
 

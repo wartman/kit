@@ -51,29 +51,27 @@ inline extern function getResult<T>(handler):Result<T, haxe.Exception> {
 	trace(foo); // => "default"
 	```
 
-	Unless you're sure a pattern will always match, the best practice will
-	probably be to provide defaults.
+	You can also pass in an `if` expression that gives you a way to scope
+	matched values (and optionally run an `else` branch if no matches are
+	found):
+
+	```haxe
+	var foo:Maybe<String> = None;
+	foo.extract(if (Some(value)) {
+		trace(value); // does not run
+	} else {
+		trace('Runs');
+	});
+	```
 **/
 macro function extract(input, match) {
 	return kit.sugar.Extract.createExtractExpr(input, match);
 }
 
 /**
-	Deconstructs an expression and passes it to the given `body`, but *only*
-	if the expression is matched.
-
-	If the expression is not matched, you can optionally provide an `otherwise`
-	expression that will be executed instead.
-
-	```haxe
-	var foo:Maybe<String> = None;
-	foo.ifExtract(Some(value), {
-		trace(value); // does not run
-	}, {
-		trace('Runs');
-	});
-	```
+	DEPRECATED: Use `extract` with an `if` expression instead
 **/
+@:deprecated('Use `extract` with an `if` expression instead')
 macro function ifExtract(input, match, body, ?otherwise) {
 	return kit.sugar.Extract.createIfExtractExpr(input, match, body, otherwise);
 }

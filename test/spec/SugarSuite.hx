@@ -24,29 +24,26 @@ class SugarSuite extends Suite {
 						actual.should().be('foo');
 					});
 				});
-			});
-
-			describe('*.ifExtract', () -> {
-				describe('Given an enum', () -> {
-					it('returns true if it matches', (spec:Spec) -> {
+				describe('Given an if expr', () -> {
+					it('returns true if it matches', spec -> {
 						spec.expect(1);
 						var foo:Maybe<String> = Some('foo');
-						foo.ifExtract(Some(var value), value.should().be('foo'));
+						foo.extract(if (Some(value)) value.should().be('foo'));
 					});
-					it('returns false if it does not match', (spec:Spec) -> {
+					it('returns false if it does not match', spec -> {
 						spec.expect(1);
 						var foo:Maybe<String> = None;
-						foo.ifExtract(Some(var value), {
+						foo.extract(if (Some(value)) {
 							value.should().be('foo');
-						}, {
+						} else {
 							foo.should().be(None);
 						});
 					});
-					it('does not leak into the parent scope', (spec:Spec) -> {
+					it('does not leak into the parent scope', spec -> {
 						spec.expect(2);
 						var foo:Maybe<String> = Some('foo');
 						var value:String = 'bar';
-						foo.ifExtract(Some(var value), value.should().be('foo'));
+						foo.extract(if (Some(value)) value.should().be('foo'));
 						value.should().be('bar');
 					});
 				});

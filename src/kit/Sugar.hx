@@ -21,6 +21,7 @@ macro function extract(input, match) {
 	return kit.sugar.Extract.createExtractExpr(input, match);
 }
 
+@:deprecated
 macro function ifExtract(input, match, body, ?otherwise) {
 	return kit.sugar.Extract.createIfExtractExpr(input, match, body, otherwise);
 }

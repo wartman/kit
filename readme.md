@@ -46,15 +46,15 @@ trace(foo); // => "default"
 
 Unless you're sure a pattern will always match, best practice is to provide defaults.
 
-You can alternatively use `target.ifExtract(pattern, body, ?otherwise)` for a little more safety. This will deconstruct an expression and pass it to the given `body`, but *only* if the target expression is matched.
+You can alternatively pass an `if` expression for a little more safety. This will deconstruct an expression *only* if there is a match.
 
-If the target expression is not matched, you can optionally provide an `otherwise` expression that will be executed instead.
+If the target expression is not matched, you can optionally provide an else branch that will be executed instead.
 
 ```haxe
 var foo:Maybe<String> = None;
-foo.ifExtract(Some(value), {
+foo.extract(if (Some(value)) {
   trace(value); // does not run
-}, {
+} else {
   // otherwise...
   trace('Runs');
 });
@@ -90,6 +90,21 @@ function makeFoo(str:String):Result<String, String> {
     case 'foo': Error('Already foo!');
     default: Ok('foo');
   }
+}
+```
+
+### Or
+
+The `kit.Or` type can be used to handle places where several different types can be expected. It's especially useful for doing things like accumulating error types. For example:
+
+```haxe
+enum ParseError {
+  InvalidChar;
+  TooLong;
+}
+
+function parseFile(file:kit.file.File):Task<String, Or<FileError, ParseError>> {
+  return file.read().map(contents -> parse(contents));
 }
 ```
 
