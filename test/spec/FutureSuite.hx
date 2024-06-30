@@ -36,7 +36,7 @@ class FutureSuite extends Suite {
 						called++;
 						activate('bar');
 					})).map(values -> {
-						values.extract([foo, bar]);
+						values.extract(try [foo, bar]);
 						called.should().be(2);
 						foo.should().be('foo');
 						bar.should().be('bar');
@@ -47,7 +47,7 @@ class FutureSuite extends Suite {
 					spec.expect(2);
 
 					return Future.parallel(new Future(activate -> activate('foo')), new Future(activate -> activate('bar'))).map(values -> {
-						values.extract([foo, bar]);
+						values.extract(try [foo, bar]);
 						foo.should().be('foo');
 						bar.should().be('bar');
 						Maybe.None;

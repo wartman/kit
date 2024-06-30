@@ -7,7 +7,7 @@ class SugarSuite extends Suite {
 				describe('Given an object', () -> {
 					it('can deconstruct it', () -> {
 						var foo:{a:String, b:Int} = {a: 'a', b: 1};
-						foo.extract({a: a, b: b});
+						foo.extract(try {a: a, b: b});
 						a.should().be('a');
 						b.should().be(1);
 					});
@@ -15,7 +15,7 @@ class SugarSuite extends Suite {
 				describe('Given an enum', () -> {
 					it('can deconstruct it', () -> {
 						var foo:Maybe<String> = Some('foo');
-						foo.extract(Some(actual));
+						foo.extract(try Some(actual));
 						actual.should().be('foo');
 					});
 					it('can handle non-matches without throwing an exception', () -> {

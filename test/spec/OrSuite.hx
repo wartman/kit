@@ -11,6 +11,7 @@ enum OtherErrors {
 }
 
 typedef ErrorList = Or<Errors, OtherErrors>;
+typedef StringOrInt = Or<String, Int>;
 
 class OrSuite extends Suite {
 	function execute() {
@@ -19,16 +20,21 @@ class OrSuite extends Suite {
 				var err:ErrorList = Errors.NotFoo;
 				err.unwrap().equals(Errors(NotFoo)).should().be(true);
 			});
-			it('Works with primitive types', () -> {
+			it('works with primitive types', () -> {
 				var data:Or<String, Int> = 'foo';
-				data.unwrap().extract(String(value));
+				data.unwrap().extract(try String(value));
 				value.should().be('foo');
 
 				data = 1;
-				data.unwrap().extract(Int(value));
+				data.unwrap().extract(try Int(value));
 				value.should().be(1);
 			});
-			it('Works with Tasks', spec -> {
+			it('creates the same type regardless of the order of type params -- for example, Or<String, Int> is the same as Or<Int, String>.', () -> {
+				var a:Or<String, Int> = 'Foo';
+				var b:Or<Int, String> = 'Foo';
+				a.unwrap().equals(b.unwrap()).should().be(true);
+			});
+			it('works with Tasks', spec -> {
 				spec.expect(1);
 
 				function failToGetInt():Task<String, Int> {
@@ -39,12 +45,12 @@ class OrSuite extends Suite {
 				// but I don't think Haxe's type system can handle that.
 				//
 				// Still useful?
-				function test():Task<String, Or<String, Int>> {
-					return failToGetInt().mapError(err -> (err : Or<String, Int>));
+				function test():Task<String, StringOrInt> {
+					return failToGetInt().mapError(StringOrInt.fromInt);
 				}
 
 				test().inspectError(error -> {
-					error.unwrap().match(Int(1)).should().be(true);
+					error.unwrap().equals(Int(1)).should().be(true);
 				}).recover(_ -> Future.immediate('Ok'));
 			});
 		});

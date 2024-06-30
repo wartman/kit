@@ -32,19 +32,19 @@ Use `expression.extract(pattern)` to deconstruct an expression. For example:
 
 ```haxe
 var something:kit.Maybe = Some('foo');
-something.extract(Some(foo));
+something.extract(try Some(foo));
 trace(foo); // => "foo"
 ```
 
-Note that an exception will be thrown if `extract` fails to match against the pattern you give it. You can avoid this problem by giving every match a default value. For example, the following code will *not* throw an exception:
+Note that we used `try` in the example above. This asserts that we're sure `foo` is going to yield a value and that we're OK with a potential runtime exception getting thrown if this isn't the case (if Haxe had an `assert` keyword we'd have used that here).
+
+If we're *not* sure a value can be extracted, we have two other options. One is to give every match a default value. For example, the following code will *not* throw an exception:
 
 ```haxe
 var something:kit.Maybe = None;
 something.extract(Some(foo = 'default'));
 trace(foo); // => "default"
 ```
-
-Unless you're sure a pattern will always match, best practice is to provide defaults.
 
 You can alternatively pass an `if` expression for a little more safety. This will deconstruct an expression *only* if there is a match.
 
@@ -53,10 +53,10 @@ If the target expression is not matched, you can optionally provide an else bran
 ```haxe
 var foo:Maybe<String> = None;
 foo.extract(if (Some(value)) {
-  trace(value); // does not run
+	trace(value); // does not run
 } else {
-  // otherwise...
-  trace('Runs');
+	// otherwise...
+	trace('Runs');
 });
 ```
 
@@ -86,10 +86,10 @@ trace(noGreeting.map(greeting -> greeting + ' world').or('goodbye world'));
 
 ```haxe
 function makeFoo(str:String):Result<String, String> {
-  return switch str {
-    case 'foo': Error('Already foo!');
-    default: Ok('foo');
-  }
+	return switch str {
+		case 'foo': Error('Already foo!');
+		default: Ok('foo');
+	}
 }
 ```
 
@@ -99,12 +99,38 @@ The `kit.Or` type can be used to handle places where several different types can
 
 ```haxe
 enum ParseError {
-  InvalidChar;
-  TooLong;
+	InvalidChar;
+	TooLong;
+	NotImplemented;
 }
 
+function parse(input:String):Task<String, ParseError> {
+  // do work here, or:
+  return Task.reject(NotImplemented);
+}
+
+// Note: yeah this isn't too ergonomic with tasks yet. Thinking on how to make this better.
 function parseFile(file:kit.file.File):Task<String, Or<FileError, ParseError>> {
-  return file.read().map(contents -> parse(contents));
+	return file
+		.read()
+		.mapError(err -> (err: Or<FileError, ParseError>))
+		.map(contents -> parse(contents).mapError(err -> (err: Or<FileError, ParseError>)));
+}
+
+function main() {
+	someFileSystem.file('./foo.txt')
+		.next(parseFile)
+		.handle(result -> switch result {
+			case Ok(parsed): // do something
+			case Error(err): switch err {
+				case FileError(errors): // do something
+				case ParseError(errors): switch errors {
+					case InvalidChar: // do something
+					case TooLong: // do something
+					case NotImplemented: // do something
+				}
+			}
+		})
 }
 ```
 

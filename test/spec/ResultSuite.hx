@@ -17,7 +17,7 @@ class ResultSuite extends Suite {
 				});
 				it('will ignore `map` if its in a failed state', () -> {
 					var result:Result<String, String> = Error('Failed');
-					result.map(value -> value + ' Ok').extract(Error(message));
+					result.map(value -> value + ' Ok').extract(try Error(message));
 					message.should().be('Failed');
 				});
 			});

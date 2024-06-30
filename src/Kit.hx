@@ -36,7 +36,7 @@ inline extern function getResult<T>(handler):Result<T, haxe.Exception> {
 
 	```haxe
 	var something:kit.Maybe = Some('foo');
-	something.extract(Some(foo));
+	something.extract(try Some(foo));
 	trace(foo); // => "foo"
 	```
 
@@ -50,6 +50,10 @@ inline extern function getResult<T>(handler):Result<T, haxe.Exception> {
 	something.extract(Some(foo = 'default'));
 	trace(foo); // => "default"
 	```
+
+	If you're sure that you don't need to do this check, prefix the match
+	expression with `try` (e.g. `something.extract(try Some(foo))`) to throw a 
+	runtime exception when a match isn't found.
 
 	You can also pass in an `if` expression that gives you a way to scope
 	matched values (and optionally run an `else` branch if no matches are

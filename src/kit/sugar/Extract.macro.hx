@@ -21,12 +21,12 @@ private typedef ExtractedExpr = {
 function createExtractExpr(input:Expr, match:Expr) {
 	var pos = Context.currentPos();
 
-	switch match.expr {
+	return switch match.expr {
 		case EIf(match, body, otherwise):
 			var extracted = extractAssignments(match);
 			if (otherwise == null) otherwise = macro null;
 
-			return macro {
+			macro {
 				var __target = $input;
 				switch __target {
 					case $match:
@@ -37,26 +37,47 @@ function createExtractExpr(input:Expr, match:Expr) {
 						${otherwise};
 				}
 			}
+		case ETry(expr, []):
+			var extracted = extractAssignments(expr);
+
+			var ifNoMatch:Expr = if (extracted.hasFallback)
+				macro null;
+			else
+				macro throw 'Could not match the given expression';
+
+			macro @:mergeBlock {
+				var __target = $input;
+				@:mergeBlock $b{extracted.decls};
+				switch __target {
+					case $expr:
+						$b{extracted.assignments};
+					default:
+						${ifNoMatch}
+				}
+				__target;
+			}
+		case ETry(match, catches):
+			catches[0].expr.pos.error('You cannot catch errors here');
+			macro null;
 		default:
-	}
+			var extracted = extractAssignments(match);
 
-	var extracted = extractAssignments(match);
+			if (!extracted.hasFallback) {
+				var str = match.toString();
+				match.pos.error('Fallbacks required for all non-exhaustive values. To skip this check, prefix this match expression with `try` (e.g. `try ${str}`)');
+			}
 
-	var ifNoMatch:Expr = if (extracted.hasFallback)
-		macro null;
-	else
-		macro throw 'Could not match the given expression';
-
-	return macro @:mergeBlock {
-		var __target = $input;
-		@:mergeBlock $b{extracted.decls};
-		switch __target {
-			case $match:
-				$b{extracted.assignments};
-			default:
-				${ifNoMatch}
-		}
-		__target;
+			macro @:mergeBlock {
+				var __target = $input;
+				@:mergeBlock $b{extracted.decls};
+				switch __target {
+					case $match:
+						$b{extracted.assignments};
+					default:
+						null;
+				}
+				__target;
+			}
 	}
 }
 

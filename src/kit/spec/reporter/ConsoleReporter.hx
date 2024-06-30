@@ -45,7 +45,7 @@ class ConsoleReporter implements Reporter {
 		buf.add('\n');
 
 		function reportSuite(suite:SuiteOutcome, indent:Int) {
-			suite.status().extract({passed: passed, failed: failed});
+			suite.status().extract(try {passed: passed, failed: failed});
 
 			passing += passed;
 			failures += failed;

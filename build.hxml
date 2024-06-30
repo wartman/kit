@@ -5,7 +5,7 @@
 
 -D debug
 -D js-es=6
-# -D analyzer-optimize
+-D analyzer-optimize
 
 # --run Run
 --main Run
