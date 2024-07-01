@@ -16,23 +16,30 @@ typedef StringOrInt = Or<String, Int>;
 class OrSuite extends Suite {
 	function execute() {
 		describe('blok.Or', () -> {
-			it('creates an abstract that can merge many types', () -> {
-				var err:ErrorList = Errors.NotFoo;
-				err.unwrap().equals(Errors(NotFoo)).should().be(true);
-			});
 			it('works with primitive types', () -> {
 				var data:Or<String, Int> = 'foo';
-				data.unwrap().extract(try String(value));
+				data.unwrap().extract(try OrString(value));
 				value.should().be('foo');
 
 				data = 1;
-				data.unwrap().extract(try Int(value));
+				data.unwrap().extract(try OrInt(value));
 				value.should().be(1);
+			});
+			it('has methods for quickly extracting types', spec -> {
+				spec.expect(2);
+				var data:Or<String, Int> = 1;
+				data.toInt().unwrap()?.should()?.be(1);
+				data.tryInt().should().be(1);
+			});
+			it('creates an abstract that can merge many types', spec -> {
+				spec.expect(1);
+				var err:ErrorList = Errors.NotFoo;
+				err.toErrors().inspect(err -> err.should().be(NotFoo));
 			});
 			it('creates the same type regardless of the order of type params -- for example, Or<String, Int> is the same as Or<Int, String>.', () -> {
 				var a:Or<String, Int> = 'Foo';
 				var b:Or<Int, String> = 'Foo';
-				a.unwrap().equals(b.unwrap()).should().be(true);
+				a.tryString().should().be(b.tryString());
 			});
 			it('works with Tasks', spec -> {
 				spec.expect(1);
@@ -50,7 +57,7 @@ class OrSuite extends Suite {
 				}
 
 				test().inspectError(error -> {
-					error.unwrap().equals(Int(1)).should().be(true);
+					error.unwrap().equals(OrInt(1)).should().be(true);
 				}).recover(_ -> Future.immediate('Ok'));
 			});
 		});

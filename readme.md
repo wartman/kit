@@ -95,7 +95,7 @@ function makeFoo(str:String):Result<String, String> {
 
 ### Or
 
-The `kit.Or` type can be used to handle places where several different types can be expected. It's especially useful for doing things like accumulating error types. For example:
+The `kit.Or` type can be used to handle places where several different types can be expected. It's especially useful for doing things like accumulating error types or handling any situation that might return different types. For example:
 
 ```haxe
 enum ParseError {
@@ -123,8 +123,8 @@ function main() {
 		.handle(result -> switch result {
 			case Ok(parsed): // do something
 			case Error(err): switch err {
-				case FileError(errors): // do something
-				case ParseError(errors): switch errors {
+				case OrFileError(errors): // do something
+				case OrParseError(errors): switch errors {
 					case InvalidChar: // do something
 					case TooLong: // do something
 					case NotImplemented: // do something

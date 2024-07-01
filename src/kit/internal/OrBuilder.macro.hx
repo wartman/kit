@@ -50,16 +50,34 @@ private function buildOr(params:Array<Type>) {
 			default:
 				Context.currentPos().error('Invalid type');
 		}
+		var constructorName = 'Or$name';
 		var fromName = 'from$name';
 		var toName = 'to$name';
-		var construct = enumImpl.typePathToArray().concat([name]);
+		var tryName = 'try$name';
+		var construct = enumImpl.typePathToArray().concat([constructorName]);
+		var error = 'Current value is not a $name';
 
 		enumBuilder.add(macro class {
-			public static function $name(value : $innerCt) {}
+			public static function $constructorName(value : $innerCt) {}
 		});
+
 		builder.add(macro class {
-			@:from public static function $fromName(value : $innerCt):$ct {
+			@:from public inline static function $fromName(value : $innerCt):$ct {
 				return $p{construct}(value);
+			}
+
+			public inline function $toName():kit.Maybe<$innerCt> {
+				return switch this {
+					case $i{constructorName}(value): Some(value);
+					default: None;
+				}
+			}
+
+			public inline function $tryName():$innerCt {
+				return switch this {
+					case $i{constructorName}(value): value;
+					default: throw $v{error};
+				}
 			}
 		});
 	}
