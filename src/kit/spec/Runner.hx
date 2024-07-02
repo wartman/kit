@@ -1,5 +1,6 @@
 package kit.spec;
 
+import kit.spec.reporter.ConsoleReporter;
 import kit.spec.Outcome.SuiteOutcome;
 
 final class Runner {
@@ -7,15 +8,33 @@ final class Runner {
 
 	final suites:Array<Suite> = [];
 
+	public static function fromDefaults(?title) {
+		var runner = new Runner();
+		runner.addReporter(new ConsoleReporter({
+			title: title,
+			verbose: true,
+			trackProgress: true
+		}));
+		return runner;
+	}
+
 	public function new() {}
 
 	public function add(cls:Class<Suite>) {
 		var suite = Type.createInstance(cls, [events]);
 		suites.push(suite);
+		return this;
 	}
+
+	macro public function addPackage(pack:String);
 
 	public function addReporter(reporter:Reporter) {
 		return events.addReporter(reporter);
+	}
+
+	public inline function withReporter(reporter:Reporter) {
+		addReporter(reporter);
+		return this;
 	}
 
 	public function run():Task<Array<SuiteOutcome>> {

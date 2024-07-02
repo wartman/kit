@@ -1,20 +1,18 @@
 package fixture;
 
+import kit.macro.*;
 import kit.macro.step.*;
-import kit.macro.ClassBuilderFactory;
-
-final builder = new ClassBuilderFactory([
-	new AutoInitializedFieldBuildStep({
-		meta: 'auto',
-		hook: Init
-	}),
-	new ConstructorBuildStep({
-		hook: Init
-	}),
-	new PropertyBuildStep(),
-	new JsonSerializerBuildStep()
-]);
 
 function build() {
-	return builder.fromContext().export();
+	return ClassBuilder.fromContext()
+		.step(new AutoInitializedFieldBuildStep({
+			meta: 'auto',
+			hook: Init
+		}))
+		.step(new ConstructorBuildStep({
+			hook: Init
+		}))
+		.step(new PropertyBuildStep())
+		.step(new JsonSerializerBuildStep())
+		.export();
 }

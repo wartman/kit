@@ -3,6 +3,7 @@ package kit.macro;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import kit.macro.step.*;
 
 using Kit;
 using Lambda;
@@ -29,15 +30,29 @@ class ClassBuilder {
 		this.type = options.type;
 	}
 
+	public function step(step:BuildStep) {
+		steps.push(step);
+		return this;
+	}
+
+	public function pipe(applicator, ?priority:Priority) {
+		return step(new ArbitraryBuildStep(priority ?? Normal, applicator));
+	}
+
+	public function withSteps(...step:BuildStep) {
+		return new ClassBuilder({
+			type: type,
+			fields: fields.getFields(),
+			steps: steps.concat(step)
+		});
+	}
+
 	public function hook(name):Hook {
-		return hookCollection
-			.find(hook -> hook.name == name)
-			.toMaybe()
-			.or(() -> {
-				var hook = new Hook(name);
-				hookCollection.push(hook);
-				hook;
-			});
+		return hookCollection.find(hook -> hook.name == name).toMaybe().or(() -> {
+			var hook = new Hook(name);
+			hookCollection.push(hook);
+			hook;
+		});
 	}
 
 	public function getType() {
