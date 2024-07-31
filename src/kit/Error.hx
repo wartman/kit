@@ -23,7 +23,7 @@ enum abstract ErrorCode(Int) from Int {
 
 // @todo: Increasingly unsure about this class. Probably
 // replace it with the `Or<...>` type and handle errors
-// sorta like Roc does.
+// sorta like Roc does?
 
 @:forward
 @:forward.new

@@ -1,13 +1,12 @@
 package kit.macro.step;
 
-import haxe.macro.Context;
 import haxe.macro.Expr;
 import kit.macro.Hook;
 
 using haxe.macro.Tools;
 using kit.macro.Tools;
 
-typedef ConstructorBuilderStep = {
+typedef ConstructorBuildStepOptions = {
 	public final ?hook:HookName;
 	public final ?lateHook:HookName;
 	public final ?privateConstructor:Bool;
@@ -23,7 +22,7 @@ typedef ConstructorBuilderStep = {
 class ConstructorBuildStep implements BuildStep {
 	public final priority:Priority = Late;
 
-	final options:ConstructorBuilderStep;
+	final options:ConstructorBuildStepOptions;
 
 	public function new(?options) {
 		this.options = options ?? {};
@@ -39,14 +38,13 @@ class ConstructorBuildStep implements BuildStep {
 			case Some(field): switch field.kind {
 					case FFun(f):
 						if (f.args.length > 0) {
-							Context.error(
+							field.pos.error(
 								'You cannot pass arguments to this constructor -- it can only '
-								+ 'be used to run code at initialization.',
-								field.pos);
+								+ 'be used to run code at initialization.');
 						}
 
 						if (options.privateConstructor == true && field.access.contains(APublic)) {
-							Context.error('Constructor must be private (remove the `public` keyword)', field.pos);
+							field.pos.error('Constructor must be private (remove the `public` keyword)');
 						}
 
 						Some(f.expr);
