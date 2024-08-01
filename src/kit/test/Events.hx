@@ -1,11 +1,10 @@
-package kit.spec;
+package kit.test;
 
-import kit.Cancellable;
-import kit.spec.Outcome;
+import kit.test.Outcome;
 
-final class Events {
+class Events {
 	public final onAssertion = new Event<Assertion>();
-	public final onSpecComplete = new Event<SpecOutcome>();
+	public final onTestComplete = new Event<TestOutcome>();
 	public final onSuiteComplete = new Event<SuiteOutcome>();
 	public final onComplete = new Event<Outcome>();
 	public final onFailure = new Event<Error>();

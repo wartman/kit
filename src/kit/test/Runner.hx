@@ -1,9 +1,9 @@
-package kit.spec;
+package kit.test;
 
-import kit.spec.reporter.ConsoleReporter;
-import kit.spec.Outcome.SuiteOutcome;
+import kit.test.reporter.ConsoleReporter;
+import kit.test.Outcome;
 
-final class Runner {
+class Runner {
 	public final events:Events = new Events();
 
 	final suites:Array<Suite> = [];
@@ -25,8 +25,6 @@ final class Runner {
 		suites.push(suite);
 		return this;
 	}
-
-	macro public function addPackage(pack:String);
 
 	public function addReporter(reporter:Reporter) {
 		return events.addReporter(reporter);

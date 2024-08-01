@@ -1,4 +1,4 @@
-package kit.spec;
+package kit.test;
 
 final class Outcome {
 	public final suites:Array<SuiteOutcome>;
@@ -10,27 +10,25 @@ final class Outcome {
 
 final class SuiteOutcome {
 	public final description:String;
-	public final specs:Array<SpecOutcome>;
-	public final children:Array<SuiteOutcome>;
+	public final tests:Array<TestOutcome>;
 
-	public function new(description, specs, ?children) {
+	public function new(description, tests) {
 		this.description = description;
-		this.specs = specs;
-		this.children = children == null ? [] : children;
+		this.tests = tests;
 	}
 
 	public function status():SuiteOutcomeStatus {
 		return {
-			total: specs.length,
-			passed: specs.filter(s -> s.status().failed == 0).length,
-			failed: specs.filter(s -> s.status().failed > 0).length,
+			total: tests.length,
+			passed: tests.filter(s -> s.status().failed == 0).length,
+			failed: tests.filter(s -> s.status().failed > 0).length,
 		}
 	}
 }
 
 typedef SuiteOutcomeStatus = {passed:Int, failed:Int, total:Int};
 
-final class SpecOutcome {
+final class TestOutcome {
 	public final description:String;
 	public final assertions:Array<Assertion>;
 

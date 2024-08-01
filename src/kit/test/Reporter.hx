@@ -1,4 +1,4 @@
-package kit.spec;
+package kit.test;
 
 interface Reporter {
 	public function progress(assertion:Assertion):Void;

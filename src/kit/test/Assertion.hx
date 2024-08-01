@@ -1,4 +1,4 @@
-package kit.spec;
+package kit.test;
 
 import haxe.PosInfos;
 

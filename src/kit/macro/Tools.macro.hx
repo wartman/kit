@@ -21,6 +21,29 @@ function getMetadata(field:Field, name:String):Null<MetadataEntry> {
 	return field.meta.find(m -> m.name == name);
 }
 
+function extractOptions(metadata:MetadataEntry, ?allowed:Array<String>) {
+	function validate(name:String, pos:Position) {
+		if (allowed == null) return;
+		if (!allowed.contains(name)) error(pos, 'Invalid option');
+	}
+
+	var entires:Map<String, Expr> = [];
+
+	for (expr in metadata.params) switch expr {
+		case macro $nameExpr = $expr:
+			var name = switch nameExpr.expr {
+				case EConst(CIdent(s)) | EConst(CString(s, _)): s;
+				default: error(nameExpr.pos, 'Expected an identifier or a string');
+			}
+			validate(name, nameExpr.pos);
+			entires.set(name, expr);
+		default:
+			error(expr.pos, 'Invalid expression');
+	}
+
+	return entires;
+}
+
 function getField(t:TypeDefinition, name:String, ?pos:Position):Result<Field, haxe.macro.Expr.Error> {
 	return switch t.fields.find(f -> f.name == name) {
 		case null: Error(new haxe.macro.Expr.Error('Field $name was not found', pos ?? Context.currentPos()));

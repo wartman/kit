@@ -1,9 +1,8 @@
-package kit.spec.reporter;
+package kit.test.reporter;
 
-import kit.spec.Outcome;
+import kit.test.Outcome;
 
 using StringTools;
-using kit.Sugar;
 
 typedef ConsoleDisplayOptions = {
 	public final ?title:String;
@@ -11,7 +10,6 @@ typedef ConsoleDisplayOptions = {
 	public final verbose:Bool;
 }
 
-#if macro #error "Cannot be used in macro context" #end
 class ConsoleReporter implements Reporter {
 	final options:ConsoleDisplayOptions;
 	var started:Bool = false;
@@ -45,7 +43,9 @@ class ConsoleReporter implements Reporter {
 		buf.add('\n');
 
 		function reportSuite(suite:SuiteOutcome, indent:Int) {
-			suite.status().extract(try {passed: passed, failed: failed});
+			var status = suite.status();
+			var passed = status.passed;
+			var failed = status.failed;
 
 			passing += passed;
 			failures += failed;
@@ -57,17 +57,17 @@ class ConsoleReporter implements Reporter {
 				buf.add(suite.description);
 				buf.add('\n');
 
-				for (spec in suite.specs) {
-					var passed = spec.status().failed == 0;
+				for (test in suite.tests) {
+					var passed = test.status().failed == 0;
 					var display = passed ? '✓' : 'X';
 
 					buf.add(''.lpad(' ', indent + 4));
-					buf.add('...it ${spec.description} $display');
+					buf.add('...${test.description} $display');
 
 					if (!passed) {
 						buf.add('\n');
 						var pad = ''.lpad(' ', indent + 6);
-						for (assertion in spec.assertions) switch assertion {
+						for (assertion in test.assertions) switch assertion {
 							case Pass:
 							case Fail(reason, pos):
 								buf.add(pad);
@@ -83,7 +83,7 @@ class ConsoleReporter implements Reporter {
 				}
 			}
 
-			for (child in suite.children) reportSuite(child, indent + 4);
+			// for (child in suite.children) reportSuite(child, indent + 4);
 		}
 
 		for (suite in outcome.suites) reportSuite(suite, 0);
@@ -91,7 +91,7 @@ class ConsoleReporter implements Reporter {
 		buf.add('\n');
 		buf.add('Status: ${failures == 0 ? 'OK' : 'FAILED'}');
 		buf.add('\n');
-		buf.add('${total} specifications | ${passing} passed | ${failures} failed');
+		buf.add('${total} tests | ${passing} passed | ${failures} failed');
 		buf.add('\n');
 
 		print(buf.toString());
