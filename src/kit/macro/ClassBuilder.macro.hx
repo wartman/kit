@@ -30,20 +30,18 @@ class ClassBuilder {
 		this.type = options.type;
 	}
 
-	public function use(bundle:BuildBundle) {
-		for (step in bundle.steps()) {
-			this.step(step);
-		}
+	public inline function pipe(applicator, ?priority:Priority) {
+		return addStep(new ArbitraryBuildStep(priority ?? Normal, applicator));
+	}
+
+	public function addBundle(bundle:BuildBundle) {
+		for (step in bundle.steps()) addStep(step);
 		return this;
 	}
 
-	public function step(step:BuildStep) {
+	public function addStep(step:BuildStep) {
 		steps.push(step);
 		return this;
-	}
-
-	public function pipe(applicator, ?priority:Priority) {
-		return step(new ArbitraryBuildStep(priority ?? Normal, applicator));
 	}
 
 	public function withSteps(...step:BuildStep) {

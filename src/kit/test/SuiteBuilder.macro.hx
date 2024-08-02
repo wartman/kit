@@ -9,7 +9,7 @@ using kit.macro.Tools;
 final TestRunnerHook = 'kit.test:test-runner';
 
 function build() {
-	return ClassBuilder.fromContext().use(new SuiteBuilder()).export();
+	return ClassBuilder.fromContext().addBundle(new SuiteBuilder()).export();
 }
 
 class SuiteBuilder implements BuildBundle implements BuildStep {

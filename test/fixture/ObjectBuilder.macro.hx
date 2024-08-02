@@ -4,7 +4,7 @@ import kit.macro.*;
 import kit.macro.step.*;
 
 function build() {
-	return ClassBuilder.fromContext().use(new ObjectBuilder()).export();
+	return ClassBuilder.fromContext().addBundle(new ObjectBuilder()).export();
 }
 
 class ObjectBuilder implements BuildBundle {
