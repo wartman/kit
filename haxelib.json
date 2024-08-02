@@ -6,6 +6,6 @@
   "dependencies": {},
   "url": "https://github.com/wartman/kit",
   "license": "MIT",
-  "releasenote": "Added inspect method to Task and Future",
-  "version": "0.1.1"
+  "releasenote": "Merged macro and tests into the main Kit repo",
+  "version": "0.2.0"
 }
