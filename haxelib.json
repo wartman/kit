@@ -7,5 +7,5 @@
   "url": "https://github.com/wartman/kit",
   "license": "MIT",
   "releasenote": "Merged macro and tests into the main Kit repo",
-  "version": "0.2.0"
+  "version": "0.2.1"
 }

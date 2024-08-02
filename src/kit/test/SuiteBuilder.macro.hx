@@ -9,12 +9,48 @@ using kit.macro.Tools;
 final TestRunnerHook = 'kit.test:test-runner';
 
 function build() {
-	return ClassBuilder.fromContext()
-		.step(new TestFieldBuildStep())
-		.step(new BeforeFieldBuildStep())
-		.step(new AfterFieldBuildStep())
-		.step(new TestBuilder())
-		.export();
+	return ClassBuilder.fromContext().use(new SuiteBuilder()).export();
+}
+
+class SuiteBuilder implements BuildBundle implements BuildStep {
+	public final priority:Priority = Late;
+
+	public function new() {}
+
+	public function steps():Array<BuildStep> return [
+		new TestFieldBuildStep(),
+		new BeforeFieldBuildStep(),
+		new AfterFieldBuildStep(),
+		this
+	];
+
+	public function apply(builder:ClassBuilder) {
+		var tests = builder.hook(TestRunnerHook).getExprs();
+		var description = builder.getType().toString();
+
+		switch builder.getClass().meta.extract(':description') {
+			case []:
+			case [meta]:
+				switch meta.params {
+					case [desc]:
+						description = description + ': ' + desc.extractString();
+					default:
+						meta.pos.error('Expected one param');
+				}
+			case tooMany:
+				tooMany[tooMany.length - 1].pos.error('Only one :description param is allowed');
+		}
+
+		builder.add(macro class {
+			function getDescription() {
+				return $v{description};
+			}
+
+			function getTests():Array<kit.test.Test> {
+				return [$a{tests}];
+			}
+		});
+	}
 }
 
 class TestFieldBuildStep implements BuildStep {
@@ -70,40 +106,6 @@ class AfterFieldBuildStep implements BuildStep {
 	public function new() {}
 
 	public function apply(builder:ClassBuilder) {}
-}
-
-class TestBuilder implements BuildStep {
-	public final priority:Priority = Late;
-
-	public function new() {}
-
-	public function apply(builder:ClassBuilder) {
-		var tests = builder.hook(TestRunnerHook).getExprs();
-		var description = builder.getType().toString();
-
-		switch builder.getClass().meta.extract(':description') {
-			case []:
-			case [meta]:
-				switch meta.params {
-					case [desc]:
-						description = description + ': ' + desc.extractString();
-					default:
-						meta.pos.error('Expected one param');
-				}
-			case tooMany:
-				tooMany[tooMany.length - 1].pos.error('Only one :description param is allowed');
-		}
-
-		builder.add(macro class {
-			function getDescription() {
-				return $v{description};
-			}
-
-			function getTests():Array<kit.test.Test> {
-				return [$a{tests}];
-			}
-		});
-	}
 }
 
 function toSentence(name:String) {

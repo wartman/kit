@@ -30,6 +30,13 @@ class ClassBuilder {
 		this.type = options.type;
 	}
 
+	public function use(bundle:BuildBundle) {
+		for (step in bundle.steps()) {
+			this.step(step);
+		}
+		return this;
+	}
+
 	public function step(step:BuildStep) {
 		steps.push(step);
 		return this;

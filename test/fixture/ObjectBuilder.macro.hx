@@ -4,15 +4,21 @@ import kit.macro.*;
 import kit.macro.step.*;
 
 function build() {
-	return ClassBuilder.fromContext()
-		.step(new AutoInitializedFieldBuildStep({
+	return ClassBuilder.fromContext().use(new ObjectBuilder()).export();
+}
+
+class ObjectBuilder implements BuildBundle {
+	public function new() {}
+
+	public function steps():Array<BuildStep> return [
+		new AutoInitializedFieldBuildStep({
 			meta: 'auto',
 			hook: Init
-		}))
-		.step(new ConstructorBuildStep({
+		}),
+		new ConstructorBuildStep({
 			hook: Init
-		}))
-		.step(new PropertyBuildStep())
-		.step(new JsonSerializerBuildStep())
-		.export();
+		}),
+		new PropertyBuildStep(),
+		new JsonSerializerBuildStep()
+	];
 }
