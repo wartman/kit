@@ -72,6 +72,13 @@ class ResultTools {
 		}
 	}
 
+	public static macro function orReturn(result) {
+		return macro switch ${result} {
+			case Ok(value): value;
+			case Error(error): return kit.Result.Error(error);
+		}
+	}
+
 	public static function orThrow<T, E>(result:Result<T, E>, ?message:String):T {
 		return switch result {
 			case Ok(value): value;
