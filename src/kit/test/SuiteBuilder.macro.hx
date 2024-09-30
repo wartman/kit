@@ -74,15 +74,17 @@ class TestFieldBuildStep implements BuildStep {
 		switch field.kind {
 			case FFun(f):
 				var name = field.name;
-				var options = meta.extractOptions(['description', 'expects']);
+				var options = meta.extractOptions(['description', 'expects', 'timeout']);
 				var description = options.get('description')?.extractString() ?? toSentence(name);
 				var expects = options.get('expects') ?? macro null;
+				var timeout = options.get('timeout') ?? macro null;
 
 				builder.hook(TestRunnerHook).addExpr(macro new kit.test.Test(
 					this.events,
 					$v{description},
 					this.$name,
-					$expects
+					$expects,
+					$timeout
 				));
 			default:
 				field.pos.error(':test fields must be methods');

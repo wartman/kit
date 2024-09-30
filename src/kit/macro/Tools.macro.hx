@@ -154,3 +154,10 @@ function extractString(e:Expr):String {
 		default: Context.error('Expected a string', e.pos);
 	}
 }
+
+function extractInt(e:Expr):Int {
+	return switch e.expr {
+		case EConst(CInt(i)): Std.parseInt(i);
+		default: Context.error('Expected a string', e.pos);
+	}
+}

@@ -52,6 +52,7 @@ private function buildOr(params:Array<Type>) {
 		}
 		var constructorName = 'Or$name';
 		var fromName = 'from$name';
+		var isName = 'is$name';
 		var toName = 'to$name';
 		var tryName = 'try$name';
 		var construct = enumImpl.typePathToArray().concat([constructorName]);
@@ -64,6 +65,13 @@ private function buildOr(params:Array<Type>) {
 		builder.add(macro class {
 			@:from public inline static function $fromName(value : $innerCt):$ct {
 				return $p{construct}(value);
+			}
+
+			public inline function $isName():Bool {
+				return switch this {
+					case $i{constructorName}(_): true;
+					default: false;
+				}
 			}
 
 			public inline function $toName():kit.Maybe<$innerCt> {

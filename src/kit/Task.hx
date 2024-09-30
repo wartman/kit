@@ -12,6 +12,8 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	@:noUsing public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+		if (tasks.length == 0) return Task.resolve([]);
+
 		return new Future(activate -> {
 			var failed:Bool = false;
 			var result:Array<T> = [];
@@ -37,6 +39,8 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	@:noUsing public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+		if (tasks.length == 0) return Task.resolve([]);
+
 		return new Future(activate -> {
 			var result:Array<T> = [];
 			var failed:Bool = false;

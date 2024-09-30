@@ -2,6 +2,7 @@ package kit.test;
 
 import haxe.PosInfos;
 
+// @todo: Conflicts with kit.Assert -- rename!
 @:allow(kit.test)
 class Assert {
 	static var currentTest:Maybe<Test> = None;

@@ -28,9 +28,10 @@ class OrSuite extends Suite {
 		value.equals(1);
 	}
 
-	@:test(expects = 2)
+	@:test(expects = 3)
 	function hasMethodsForQuicklyExtractingTypes() {
 		var data:Or<String, Int> = 1;
+		data.isInt().equals(true);
 		data.toInt().unwrap()?.equals(1);
 		data.tryInt().equals(1);
 	}

@@ -7,7 +7,7 @@ using kit.Testing;
 using kit.Sugar;
 
 class FutureSuite extends Suite {
-	@:test(expects = 1)
+	@:test(expects = 1, timeout = 100)
 	function futuresWillActivate() {
 		var future = new Future(activate -> activate('pass'));
 		return future.map(value -> {
@@ -16,7 +16,7 @@ class FutureSuite extends Suite {
 		});
 	}
 
-	@:test(expects = 1)
+	@:test(expects = 1, timeout = 100)
 	function futuresCanMapValues() {
 		var foo = new Future(activate -> activate('foo'));
 		return foo.map(foo -> foo + 'bar').map(bar -> bar + 'bin').map(value -> {
@@ -25,7 +25,7 @@ class FutureSuite extends Suite {
 		});
 	}
 
-	@:test(expects = 5)
+	@:test(expects = 5, timeout = 100)
 	function futuresCanRunInSequence() {
 		var called = 0;
 		return Future.sequence(new Future(activate -> {
@@ -45,12 +45,13 @@ class FutureSuite extends Suite {
 		});
 	}
 
-	@:test(expects = 2)
+	@:test(expects = 3, timeout = 100)
 	function futuresCanRunInParallel() {
 		return Future.parallel(
 			new Future(activate -> activate('foo')),
 			new Future(activate -> activate('bar'))
 		).map(values -> {
+			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
 			bar.equals('bar');
@@ -58,7 +59,23 @@ class FutureSuite extends Suite {
 		});
 	}
 
-	@:test(description = 'will not run if handle is never called', expects = 0)
+	@:test(expects = 1)
+	function ifNoFuturesAreProvidedParallelWillStillActivate() {
+		return Future.parallel().map(values -> {
+			values.length.equals(0);
+			values;
+		});
+	}
+
+	@:test(expects = 1)
+	function ifNoFuturesAreProvidedSequenceWillStillActivate() {
+		return Future.sequence().map(values -> {
+			values.length.equals(0);
+			values;
+		});
+	}
+
+	@:test(description = 'will not run if handle is never called', expects = 0, timeout = 100)
 	function futuresAreLazy() {
 		var future = new Future(activate -> activate('foo'));
 		future.map(foo -> foo.equals('foo')); // should not be called
@@ -74,7 +91,7 @@ class FutureSuite extends Suite {
 		(link is CancellableLink).equals(true);
 	}
 
-	@:test(description = 'will not run the handler if canceled', expects = 0)
+	@:test(description = 'will not run the handler if canceled', expects = 0, timeout = 200)
 	function cancelActuallyWorks() {
 		return new Future(outerActivate -> {
 			var future = new Future<String>(activate -> {

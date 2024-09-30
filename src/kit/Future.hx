@@ -17,6 +17,8 @@ class Future<T> {
 	}
 
 	@:noUsing public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
+		if (futures.length == 0) return Future.immediate([]);
+
 		return new Future(activate -> {
 			var result = [];
 			var count = 0;
@@ -31,6 +33,8 @@ class Future<T> {
 	}
 
 	@:noUsing public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
+		if (futures.length == 0) return Future.immediate([]);
+
 		return new Future(activate -> {
 			var result = [];
 			function poll(index:Int) {

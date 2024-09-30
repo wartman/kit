@@ -1,5 +1,6 @@
 package kit.test;
 
+import haxe.Timer;
 import haxe.PosInfos;
 import kit.test.Outcome;
 
@@ -8,14 +9,15 @@ class Test {
 	final description:String;
 	final assertions:Array<Assertion> = [];
 	final body:TestBody;
-	// final timeout:Maybe<Int>;
+	final timeout:Maybe<Int>;
 	final expects:Maybe<Int>;
 
-	public function new(events, description, body, ?expects) {
+	public function new(events, description, body, ?expects, ?timeout) {
 		this.events = events;
 		this.description = description;
 		this.body = body;
 		this.expects = expects == null ? None : Some(expects);
+		this.timeout = timeout == null ? None : Some(timeout);
 	}
 
 	public function addAssertion(assertion:Assertion) {
@@ -30,34 +32,52 @@ class Test {
 			return Task.resolve(outcome);
 		}
 
-		// @todo: Add timeout
-		return new Future<Result<TestOutcome, Error>>(activate -> {
+		return new Task(activate -> {
 			Assert.bind(this);
-			body.invoke().handle(res -> switch res {
-				case Ok(_):
-					Assert.clear();
+			var handled = false;
+			var link = body.invoke().handle(res -> {
+				handled = true;
+				switch res {
+					case Ok(_):
+						Assert.clear();
 
-					switch expects {
-						case None:
-							if (assertions.length == 0) addAssertion(Warn('No assertions'));
-						case Some(0) if (assertions.length != 0):
-							addAssertion(Fail('Expected no assertions but asserted ${assertions.length}', pos));
-						case Some(count) if (count != assertions.length):
-							addAssertion(Fail('Expected ${count} but asserted ${assertions.length}', pos));
-						case Some(_):
-					}
+						switch expects {
+							case None:
+								if (assertions.length == 0) addAssertion(Warn('No assertions'));
+							case Some(0) if (assertions.length != 0):
+								addAssertion(Fail('Expected no assertions but asserted ${assertions.length}', pos));
+							case Some(count) if (count != assertions.length):
+								addAssertion(Fail('Expected ${count} but asserted ${assertions.length}', pos));
+							case Some(_):
+						}
+
+						var outcome = new TestOutcome(description, assertions);
+
+						events.onTestComplete.dispatch(outcome);
+
+						activate(Ok(outcome));
+					case Error(error):
+						Assert.clear();
+						addAssertion(Fail(error.message));
+						var outcome = new TestOutcome(description, assertions);
+						activate(Ok(outcome));
+				}
+			});
+
+			Timer.delay(() -> {
+				if (!handled) {
+					link.cancel();
+					handled = true;
+					Assert.clear();
+					addAssertion(Fail('Test timed out after ${timeout.or(1000)}ms'));
 
 					var outcome = new TestOutcome(description, assertions);
 
 					events.onTestComplete.dispatch(outcome);
 
 					activate(Ok(outcome));
-				case Error(error):
-					Assert.clear();
-					addAssertion(Fail(error.message));
-					var outcome = new TestOutcome(description, assertions);
-					activate(Ok(outcome));
-			});
+				}
+			}, timeout.or(1000));
 		});
 	}
 }
