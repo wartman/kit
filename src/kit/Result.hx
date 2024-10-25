@@ -73,7 +73,7 @@ class ResultTools {
 	}
 
 	public static macro function orReturn(result) {
-		return macro switch ${result} {
+		return macro @:pos(result.pos) switch ${result} {
 			case Ok(value): value;
 			case Error(error): return kit.Result.Error(error);
 		}
