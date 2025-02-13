@@ -7,7 +7,6 @@ function main() {
 		.add(kit.MaybeSuite)
 		.add(kit.OrSuite)
 		.add(kit.ResultSuite)
-		.add(kit.StreamSuite)
 		.add(kit.SugarSuite)
 		.add(kit.TaskSuite)
 		.run();

@@ -6,6 +6,6 @@
   "dependencies": {},
   "url": "https://github.com/wartman/kit",
   "license": "MIT",
-  "releasenote": "Merged macro and tests into the main Kit repo",
-  "version": "0.2.1"
+  "releasenote": "Remove Stream for now (it's far from being ready)",
+  "version": "0.3.0"
 }
