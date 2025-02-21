@@ -43,7 +43,7 @@ class Assert {
 	}
 
 	public static function notEquals<T>(subject:T, expected:T, ?pos:PosInfos) {
-		if (subject != expected) {
+		if (subject == expected) {
 			current().addAssertion(Fail('Expected ${Std.string(expected)} to not equal ${Std.string(subject)}', pos));
 		} else {
 			current().addAssertion(Pass);

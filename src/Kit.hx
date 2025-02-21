@@ -16,6 +16,10 @@ class Event<Rest> {}
 @:genericBuild(kit.internal.OrBuilder.build())
 #end
 interface Or<Rest> {}
+#if !macro
+@:genericBuild(kit.internal.TupleBuilder.build())
+#end
+class Tuple<Rest> {}
 
 /**
 	Convert any nullable value into a kit.Maybe.

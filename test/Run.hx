@@ -8,6 +8,7 @@ function main() {
 		.add(kit.OrSuite)
 		.add(kit.ResultSuite)
 		.add(kit.SugarSuite)
+		.add(kit.TupleTest)
 		.add(kit.TaskSuite)
 		.run();
 }

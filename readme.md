@@ -134,6 +134,29 @@ function main() {
 }
 ```
 
+### Tuple
+
+A `kit.Tuple` is an extremely simple data structure you can use whenever you just need a few values of differing types.
+
+```haxe
+var tuple = new Tuple<Int, String>(1, 'two');
+```
+
+Because kit's Tuple is using a generic macro behind the scenes you'll need to always provide type parameters when instantiating it, which can be annoying. To get around this, you can use `Tuple.of`:
+
+```haxe
+var tuple = Tuple.of(1, 'two');
+```
+
+Internally the Tuple is just an abstract object where each field is named with an underscore plus position. For example:
+
+```haxe
+var tuple = Tuple.of(1, 'two');
+
+tuple._0 == 1; // -> true
+tuple._1 == 'two'; // -> true
+```
+
 ### Macro
 
 > Todo
