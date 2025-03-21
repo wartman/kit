@@ -18,6 +18,14 @@ class ResultSuite extends Suite {
 		message.equals('Failed');
 	}
 
+	@:test(expects = 2)
+	function alwaysMethodCanBeUsedToHelpWithChaining() {
+		var result:Result<String, String> = Ok('ok');
+		result.always(() -> Assert.pass());
+		var result:Result<String, String> = Error('error');
+		result.always(() -> Assert.pass());
+	}
+
 	@:test
 	function canReturnIfErrored() {
 		var result:Result<String, String> = Error('failed');

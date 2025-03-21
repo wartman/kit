@@ -65,6 +65,11 @@ class ResultTools {
 		return result;
 	}
 
+	public static function always<T, E>(result:Result<T, E>, handler:() -> Void) {
+		handler();
+		return result;
+	}
+
 	public static function or<T, E>(result:Result<T, E>, value:Lazy<T>):T {
 		return switch result {
 			case Ok(value): value;
