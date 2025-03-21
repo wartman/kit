@@ -18,15 +18,15 @@ class TaskSuite extends Suite {
 		var foo:Task<String> = 'foo';
 		return foo.next(foo -> new Error(InternalError, 'expected')).recover(e -> {
 			e.message.equals('expected');
-			Task.resolve('foo');
+			Future.immediate(Nothing);
 		});
 	}
 
 	@:test(expects = 3, timeout = 100)
 	function willRunInParallel() {
 		return Task.parallel(
-			Task.resolve('foo'),
-			Task.resolve('bar')
+			Task.ok('foo'),
+			Task.ok('bar')
 		).next(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
@@ -39,8 +39,8 @@ class TaskSuite extends Suite {
 	@:test(expects = 3, timeout = 100)
 	function willRunInSequence() {
 		return Task.sequence(
-			Task.resolve('foo'),
-			Task.resolve('bar')
+			Task.ok('foo'),
+			Task.ok('bar')
 		).next(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
@@ -64,6 +64,16 @@ class TaskSuite extends Suite {
 			values.length.equals(0);
 			values;
 		});
+	}
+
+	@:test(expects = 1)
+	function alwaysWillBeCalledOnOk() {
+		return Task.ok('Foo').always(() -> Assert.pass());
+	}
+
+	@:test(expects = 1)
+	function alwaysWillBeCalledOnError() {
+		return Task.error('Foo').always(() -> Assert.pass()).recover(_ -> Task.nothing());
 	}
 
 	// @todo: We need to test nesting tasks -- seems to run into issues sometimes?

@@ -29,7 +29,7 @@ class Test {
 		if (body == null) {
 			addAssertion(Warn('Incomplete spec'));
 			var outcome = new TestOutcome(description, assertions);
-			return Task.resolve(outcome);
+			return Task.ok(outcome);
 		}
 
 		return new Task(activate -> {

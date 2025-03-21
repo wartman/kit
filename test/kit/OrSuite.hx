@@ -53,7 +53,7 @@ class OrSuite extends Suite {
 	@:test(expects = 1)
 	function worksWithTasks() {
 		function failToGetInt():Task<String, Int> {
-			return Task.reject(1);
+			return Task.error(1);
 		}
 
 		// It would be great for this to happen automatically,

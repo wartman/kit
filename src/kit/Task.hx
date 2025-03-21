@@ -12,7 +12,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	@:noUsing public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
-		if (tasks.length == 0) return Task.resolve([]);
+		if (tasks.length == 0) return Task.ok([]);
 
 		return new Future(activate -> {
 			var failed:Bool = false;
@@ -39,7 +39,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	@:noUsing public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
-		if (tasks.length == 0) return Task.resolve([]);
+		if (tasks.length == 0) return Task.ok([]);
 
 		return new Future(activate -> {
 			var result:Array<T> = [];
@@ -74,12 +74,22 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		return new Task(activate -> activate(Error(error)));
 	}
 
-	@:from @:noUsing public static function resolve<T, E>(value:T):Task<T, E> {
+	@:from @:noUsing public static function ok<T, E>(value:T):Task<T, E> {
 		return new Task(activate -> activate(Ok(value)));
 	}
 
-	@:noUsing public static function reject<T, E>(e:E):Task<T, E> {
+	@:noUsing public static function error<T, E>(e:E):Task<T, E> {
 		return new Task(activate -> activate(Error(e)));
+	}
+
+	@:deprecated('Use `Task.ok` instead')
+	@:noUsing public static function resolve<T, E>(value:T):Task<T, E> {
+		return ok(value);
+	}
+
+	@:deprecated('Use `Task.error` instead')
+	@:noUsing public static function reject<T, E>(e:E):Task<T, E> {
+		return error(e);
 	}
 
 	public inline function new(activator) {
@@ -100,17 +110,24 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
+	public inline function always(handler:() -> Void):Task<T, E> {
+		return this.flatMap(result -> {
+			handler();
+			Future.immediate(result);
+		});
+	}
+
 	public inline function next<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): handler(value);
-			case Error(error): reject(error);
+			case Error(e): error(e);
 		});
 	}
 
 	public inline function mapError<R>(handler:(error:E) -> R):Task<T, R> {
 		return this.flatMap(result -> switch result {
-			case Ok(value): resolve(value);
-			case Error(e): reject(handler(e));
+			case Ok(value): ok(value);
+			case Error(e): error(handler(e));
 		});
 	}
 

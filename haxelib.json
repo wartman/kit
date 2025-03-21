@@ -6,6 +6,6 @@
   "dependencies": {},
   "url": "https://github.com/wartman/kit",
   "license": "MIT",
-  "releasenote": "Remove Stream for now (it's far from being ready)",
-  "version": "0.3.0"
+  "releasenote": "Update Task api a bit",
+  "version": "0.3.1"
 }
