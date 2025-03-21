@@ -9,12 +9,17 @@ function toMaybe<T>(value:Null<T>):Maybe<T> {
 	}
 }
 
-function getResult<T>(handler:() -> T):Result<T, Exception> {
+function attempt<T>(handler:() -> T):Result<T, Exception> {
 	return try {
 		Ok(handler());
 	} catch (e) {
 		Error(e);
 	}
+}
+
+@:deprecated('Use `attempt` instead')
+function getResult<T>(handler:() -> T):Result<T, Exception> {
+	return attempt(handler);
 }
 
 macro function extract(input, match) {

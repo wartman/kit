@@ -24,8 +24,13 @@ inline extern function toMaybe<T>(value:Null<T>):Maybe<T> {
 	return kit.Sugar.toMaybe(value);
 }
 
-inline extern function getResult<T>(handler):Result<T, haxe.Exception> {
-	return kit.Sugar.getResult(handler);
+function attempt<T>(handler):Result<T, haxe.Exception> {
+	return kit.Sugar.attempt(handler);
+}
+
+@:deprecated('Use `attempt` instead')
+function getResult<T>(handler:() -> T):Result<T, haxe.Exception> {
+	return attempt(handler);
 }
 
 /**
