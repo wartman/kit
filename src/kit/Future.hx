@@ -16,8 +16,8 @@ class Future<T> {
 		return new Future(activate -> activate(value));
 	}
 
-	@:noUsing public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
-		if (futures.length == 0) return Future.immediate([]);
+	@:noUsing public static function inParallel<T>(?futures:Array<Future<T>>):Future<Array<T>> {
+		if (futures == null || futures.length == 0) return Future.immediate([]);
 
 		return new Future(activate -> {
 			var result = [];
@@ -32,8 +32,8 @@ class Future<T> {
 		});
 	}
 
-	@:noUsing public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
-		if (futures.length == 0) return Future.immediate([]);
+	@:noUsing public static function inSequence<T>(?futures:Array<Future<T>>):Future<Array<T>> {
+		if (futures == null || futures.length == 0) return Future.immediate([]);
 
 		return new Future(activate -> {
 			var result = [];
@@ -46,6 +46,16 @@ class Future<T> {
 			}
 			poll(0);
 		});
+	}
+
+	@:deprecated('Use inParallel instead')
+	@:noUsing public static function parallel<T>(...futures:Future<T>):Future<Array<T>> {
+		return inParallel(futures);
+	}
+
+	@:deprecated('Use inSequence instead')
+	@:noUsing public static function sequence<T>(...futures:Future<T>):Future<Array<T>> {
+		return inSequence(futures);
 	}
 
 	var state:FutureState<T>;

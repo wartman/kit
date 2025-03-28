@@ -24,10 +24,10 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 3, timeout = 100)
 	function willRunInParallel() {
-		return Task.parallel(
+		return Task.inParallel([
 			Task.ok('foo'),
 			Task.ok('bar')
-		).next(values -> {
+		]).next(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
@@ -38,10 +38,10 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 3, timeout = 100)
 	function willRunInSequence() {
-		return Task.sequence(
+		return Task.inSequence([
 			Task.ok('foo'),
 			Task.ok('bar')
-		).next(values -> {
+		]).next(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
@@ -52,7 +52,7 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoTasksAreProvidedParallelWillStillActivate() {
-		return Task.parallel().next(values -> {
+		return Task.inParallel().next(values -> {
 			values.length.equals(0);
 			values;
 		});
@@ -60,7 +60,7 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoTasksAreProvidedSequenceWillStillActivate() {
-		return Task.sequence().next(values -> {
+		return Task.inSequence().next(values -> {
 			values.length.equals(0);
 			values;
 		});
@@ -73,7 +73,7 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 1)
 	function alwaysWillBeCalledOnError() {
-		return Task.error('Foo').always(() -> Assert.pass()).recover(_ -> Task.nothing());
+		return Task.error('Foo').always(() -> Assert.pass()).recover(_ -> Future.immediate(Nothing));
 	}
 
 	// @todo: We need to test nesting tasks -- seems to run into issues sometimes?

@@ -2,6 +2,8 @@ package kit.test;
 
 import kit.test.Outcome;
 
+using Kit;
+
 @:autoBuild(kit.test.SuiteBuilder.build())
 abstract class Suite {
 	final events:Events;
@@ -15,7 +17,9 @@ abstract class Suite {
 	abstract function getTests():Array<Test>;
 
 	public function run():Task<SuiteOutcome> {
-		return Task.sequence(...getTests().map(test -> test.run()))
+		return getTests()
+			.map(test -> test.run())
+			.inSequence()
 			.next(outcomes -> {
 				var outcome = new SuiteOutcome(getDescription(), outcomes);
 				events.onSuiteComplete.dispatch(outcome);

@@ -3,6 +3,8 @@ package kit.test;
 import kit.test.reporter.ConsoleReporter;
 import kit.test.Outcome;
 
+using Kit;
+
 class Runner {
 	public final events:Events = new Events();
 
@@ -37,13 +39,16 @@ class Runner {
 
 	public function run():Task<Array<SuiteOutcome>> {
 		return new Future(activate -> {
-			Task.sequence(...suites.map(s -> s.run())).handle(result -> {
-				switch result {
-					case Ok(outcomes): events.onComplete.dispatch(new Outcome(outcomes));
-					case Error(error): events.onFailure.dispatch(error);
-				}
-				activate(result);
-			});
+			suites
+				.map(s -> s.run())
+				.inSequence()
+				.handle(result -> {
+					switch result {
+						case Ok(outcomes): events.onComplete.dispatch(new Outcome(outcomes));
+						case Error(error): events.onFailure.dispatch(error);
+					}
+					activate(result);
+				});
 		}).eager();
 	}
 }

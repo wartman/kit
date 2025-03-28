@@ -28,15 +28,18 @@ class FutureSuite extends Suite {
 	@:test(expects = 5, timeout = 100)
 	function futuresCanRunInSequence() {
 		var called = 0;
-		return Future.sequence(new Future(activate -> {
-			called.equals(0);
-			called++;
-			activate('foo');
-		}), new Future(activate -> {
-			called.equals(1);
-			called++;
-			activate('bar');
-		})).map(values -> {
+		return Future.inSequence([
+			new Future(activate -> {
+				called.equals(0);
+				called++;
+				activate('foo');
+			}),
+			new Future(activate -> {
+				called.equals(1);
+				called++;
+				activate('bar');
+			})
+		]).map(values -> {
 			values.extract(try [foo, bar]);
 			called.equals(2);
 			foo.equals('foo');
@@ -47,10 +50,10 @@ class FutureSuite extends Suite {
 
 	@:test(expects = 3, timeout = 100)
 	function futuresCanRunInParallel() {
-		return Future.parallel(
+		return Future.inParallel([
 			new Future(activate -> activate('foo')),
 			new Future(activate -> activate('bar'))
-		).map(values -> {
+		]).map(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
@@ -61,7 +64,7 @@ class FutureSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoFuturesAreProvidedParallelWillStillActivate() {
-		return Future.parallel().map(values -> {
+		return Future.inParallel().map(values -> {
 			values.length.equals(0);
 			values;
 		});
@@ -69,7 +72,7 @@ class FutureSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoFuturesAreProvidedSequenceWillStillActivate() {
-		return Future.sequence().map(values -> {
+		return Future.inSequence().map(values -> {
 			values.length.equals(0);
 			values;
 		});

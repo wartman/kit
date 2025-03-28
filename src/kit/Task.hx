@@ -11,8 +11,8 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		return new Task(activate -> activate(Ok(Nothing)));
 	}
 
-	@:noUsing public static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
-		if (tasks.length == 0) return Task.ok([]);
+	public static function inParallel<T, E>(?tasks:Array<Task<T, E>>):Task<Array<T>, E> {
+		if (tasks == null || tasks.length == 0) return Task.ok([]);
 
 		return new Future(activate -> {
 			var failed:Bool = false;
@@ -38,8 +38,8 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
-	@:noUsing public static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
-		if (tasks.length == 0) return Task.ok([]);
+	public static function inSequence<T, E>(?tasks:Array<Task<T, E>>):Task<Array<T>, E> {
+		if (tasks == null || tasks.length == 0) return Task.ok([]);
 
 		return new Future(activate -> {
 			var result:Array<T> = [];
@@ -60,6 +60,16 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 
 			poll(0);
 		});
+	}
+
+	@:deprecated('Use inParallel instead')
+	@:noUsing public inline extern static function parallel<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+		return inParallel(tasks);
+	}
+
+	@:deprecated('use inSequence instead')
+	@:noUsing public inline extern static function sequence<T, E>(...tasks:Task<T, E>):Task<Array<T>, E> {
+		return inSequence(tasks);
 	}
 
 	@:from @:noUsing public static function ofResult<T, E>(result:Result<T, E>):Task<T, E> {
