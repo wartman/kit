@@ -107,7 +107,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	public inline function inspect(handler:(value:T) -> Void):Task<T, E> {
-		return next(value -> {
+		return then(value -> {
 			handler(value);
 			value;
 		});
@@ -127,11 +127,16 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 		});
 	}
 
-	public inline function next<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
+	public inline function then<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
 		return this.flatMap(result -> switch result {
 			case Ok(value): handler(value);
 			case Error(e): error(e);
 		});
+	}
+
+	@:deprecated('Use then instead')
+	public inline function next<R>(handler:(value:T) -> Task<R, E>):Task<R, E> {
+		return then(handler);
 	}
 
 	public inline function mapError<R>(handler:(error:E) -> R):Task<T, R> {
@@ -170,7 +175,7 @@ abstract Task<T, E = Error>(Future<Result<T, E>>) from Future<Result<T, E>> to F
 	}
 
 	@:to public inline function toNothing():Task<Nothing, E> {
-		return next(_ -> nothing());
+		return then(_ -> nothing());
 	}
 
 	#if js

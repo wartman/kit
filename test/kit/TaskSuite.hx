@@ -7,7 +7,7 @@ class TaskSuite extends Suite {
 	@:test(expects = 1, timeout = 100)
 	function convertsStaticValues() {
 		var foo:Task<String> = 'foo';
-		return foo.next(foo -> foo + 'bar').next(value -> {
+		return foo.then(foo -> foo + 'bar').then(value -> {
 			value.equals('foobar');
 			value;
 		});
@@ -16,7 +16,7 @@ class TaskSuite extends Suite {
 	@:test(expects = 1, timeout = 100)
 	function willConvertErrorsToFailures() {
 		var foo:Task<String> = 'foo';
-		return foo.next(foo -> new Error(InternalError, 'expected')).recover(e -> {
+		return foo.then(foo -> new Error(InternalError, 'expected')).recover(e -> {
 			e.message.equals('expected');
 			Future.immediate(Nothing);
 		});
@@ -27,7 +27,7 @@ class TaskSuite extends Suite {
 		return Task.inParallel([
 			Task.ok('foo'),
 			Task.ok('bar')
-		]).next(values -> {
+		]).then(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
@@ -41,7 +41,7 @@ class TaskSuite extends Suite {
 		return Task.inSequence([
 			Task.ok('foo'),
 			Task.ok('bar')
-		]).next(values -> {
+		]).then(values -> {
 			values.length.equals(2);
 			values.extract(try [foo, bar]);
 			foo.equals('foo');
@@ -52,7 +52,7 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoTasksAreProvidedParallelWillStillActivate() {
-		return Task.inParallel().next(values -> {
+		return Task.inParallel().then(values -> {
 			values.length.equals(0);
 			values;
 		});
@@ -60,7 +60,7 @@ class TaskSuite extends Suite {
 
 	@:test(expects = 1)
 	function ifNoTasksAreProvidedSequenceWillStillActivate() {
-		return Task.inSequence().next(values -> {
+		return Task.inSequence().then(values -> {
 			values.length.equals(0);
 			values;
 		});

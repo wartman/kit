@@ -20,7 +20,7 @@ abstract class Suite {
 		return getTests()
 			.map(test -> test.run())
 			.inSequence()
-			.next(outcomes -> {
+			.then(outcomes -> {
 				var outcome = new SuiteOutcome(getDescription(), outcomes);
 				events.onSuiteComplete.dispatch(outcome);
 				return outcome;

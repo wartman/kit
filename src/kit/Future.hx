@@ -12,6 +12,13 @@ private enum FutureState<T> {
 }
 
 class Future<T> {
+	@:noUsing public inline static function later<T>(value:T) {
+		return new Future(activate -> {
+			// @todo: come up with a better way to schedule things
+			haxe.Timer.delay(() -> activate(value), 10);
+		});
+	}
+
 	@:noUsing public inline static function immediate<T>(value:T) {
 		return new Future(activate -> activate(value));
 	}
