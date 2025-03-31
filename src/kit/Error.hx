@@ -21,16 +21,22 @@ enum abstract ErrorCode(Int) from Int {
 	final LoopDetected = 508;
 }
 
-// @todo: Increasingly unsure about this class. Probably
-// replace it with the `Or<...>` type and handle errors
-// sorta like Roc does?
-
 @:forward
 @:forward.new
-abstract Error(ErrorObject) to Exception {
+abstract Error(ErrorObject) from ErrorObject to Exception {
+	public static function maybeError(e:Exception):Maybe<Error> {
+		return isError(e) ? Some((cast e : ErrorObject)) : None;
+	}
+
 	@:noUsing
 	public inline static function isError(other:Exception) {
 		return other is ErrorObject;
+	}
+
+	@:noUsing
+	@:from public static function ofException(e:Exception):Error {
+		if (isError(e)) return (cast e : ErrorObject);
+		return new Error(InternalError, e.message);
 	}
 
 	public var code(get, never):ErrorCode;
