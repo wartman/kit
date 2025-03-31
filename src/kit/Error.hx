@@ -28,6 +28,11 @@ enum abstract ErrorCode(Int) from Int {
 @:forward
 @:forward.new
 abstract Error(ErrorObject) to Exception {
+	@:noUsing
+	public inline static function isError(other:Exception) {
+		return other is ErrorObject;
+	}
+
 	public var code(get, never):ErrorCode;
 
 	function get_code():ErrorCode {
