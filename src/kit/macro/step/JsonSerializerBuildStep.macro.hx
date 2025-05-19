@@ -222,6 +222,7 @@ private function isScalar(type:ComplexType) {
 	return switch type {
 		case macro :String: true;
 		case macro :Int: true;
+		case macro :Float: true;
 		case macro :Bool: true;
 		case macro :Array<$t>: isScalar(t);
 		case macro :Null<$t>: isScalar(t);
@@ -231,6 +232,9 @@ private function isScalar(type:ComplexType) {
 				return true;
 			}
 			if (Context.unify(t, Context.getType('Int'))) {
+				return true;
+			}
+			if (Context.unify(t, Context.getType('Float'))) {
 				return true;
 			}
 			if (Context.unify(t, Context.getType('Bool'))) {
