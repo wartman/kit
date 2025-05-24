@@ -29,7 +29,12 @@ class AutoInitializedFieldBuildStep implements BuildStep {
 			case FVar(t, e):
 				var name = field.name;
 				builder.hook(options.hook ?? Init)
-					.addProp({name: name, type: t, optional: e != null})
+					.addProp({
+						name: name,
+						type: t,
+						doc: field.doc,
+						optional: e != null
+					})
 					.addExpr(if (e == null) {
 						macro this.$name = props.$name;
 					} else {

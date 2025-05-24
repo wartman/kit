@@ -11,6 +11,7 @@ enum abstract HookName(String) from String {
 typedef HookProp = {
 	public final name:String;
 	public final type:ComplexType;
+	public final ?doc:String;
 	public final optional:Bool;
 }
 
@@ -34,6 +35,7 @@ class Hook {
 		var fields:Array<Field> = newProps.toArray().map(f -> ({
 			name: f.name,
 			kind: FVar(f.type),
+			doc: f.doc,
 			meta: f.optional ? [{name: ':optional', pos: pos}] : [],
 			pos: pos
 		} : Field));
