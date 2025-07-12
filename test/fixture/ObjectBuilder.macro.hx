@@ -1,10 +1,12 @@
 package fixture;
 
-import kit.macro.*;
-import kit.macro.step.*;
+import kit.macro2.*;
+import kit.macro2.step.*;
 
 function build() {
-	return ClassBuilder.fromContext().addBundle(new ObjectBuilder()).export();
+	return BuildFactory
+		.fromBundle(new ObjectBuilder())
+		.buildFromContext();
 }
 
 class ObjectBuilder implements BuildBundle {

@@ -8,6 +8,7 @@ typedef Future<T> = kit.Future<T>;
 typedef Nothing = kit.Nothing;
 typedef Error = kit.Error;
 typedef UniqueId = kit.UniqueId;
+typedef Iter = kit.Iter;
 #if !macro
 @:genericBuild(kit.internal.EventBuilder.build())
 #end
@@ -20,10 +21,14 @@ interface Or<Rest> {}
 /**
 	Convert any nullable value into a kit.Maybe.
 **/
-inline extern function toMaybe<T>(value:Null<T>):Maybe<T> {
+inline function toMaybe<T>(value:Null<T>):Maybe<T> {
 	return kit.Sugar.toMaybe(value);
 }
 
+/**
+	Attempt to call the given handler. If an exception is thrown, it will
+	be caught and converted into a `Result.Error`.
+**/
 function attempt<T>(handler):Result<T, haxe.Exception> {
 	return kit.Sugar.attempt(handler);
 }
