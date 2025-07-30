@@ -8,7 +8,7 @@ using Kit;
 abstract class Suite {
 	final events:Events;
 
-	final public function new(events) {
+	public function new(events) {
 		this.events = events;
 	}
 
